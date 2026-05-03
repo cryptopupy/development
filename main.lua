@@ -1,3 +1,346 @@
+shared.azovbeta = {
+    ["globals"] = {
+            ["loader"] = "urkeymustgohere",
+
+        ["show hotkeys"] = true,
+        ["hotkey ui"] = {
+            ["font"] = Enum.Font.Arcade,
+            ["text size"] = 11,
+            ["gap"] = 1,
+            ["show target health"] = true,
+            ["show target distance"] = true,
+            ["effective distance color"] = Color3.fromRGB(85, 255, 85),
+            ["ineffectine distance color"] = Color3.fromRGB(255, 85, 85),
+            ["show can hit"] = true,
+        },
+
+        ["target tracer"] = {
+            ["enabled"]           = true,
+                ["thickness"]         = 1,
+                ["effective color"]   = Color3.fromRGB(255, 85, 85),   
+                ["ineffective color"] = Color3.fromRGB(0, 0, 0), 
+        },
+        ["knife spam"] = {
+            ["key"] = 'G',
+            ["mode"] = 'toggle', -- toggle / hold
+                ["spam delay"] = 0.5,     
+                ["switch delay"] = 0.3,   -- seconds to wait before switching guns
+                ["idle timeout"] = 0.8,   -- seconds of no clicking before switching back to knife
+                ["switch on target"] = true, 
+                ["order"] = { "Pistols", "Shotguns" }, -- when clicking/holding during knife spam you switch to these guns in this order.
+        },
+    },
+
+    ["aimbot"] = {
+        ["enabled"] = true,
+        ["key"] = 'C',
+        ["mode"] = 'toggle', -- toggle / hold
+        ["point"] = 'Head',
+
+        ["smoothing"] = {
+            ["enabled"] = true,
+            ["mode"] = 'auto',
+            ["auto"] = {
+                ["speed"] = { ["min"] = 0, ["max"] = 80 },
+                ["range"] = { ["min"] = 0.05, ["max"] = 0.30 }
+            },
+            ["easing"] = { ["enabled"] = true, ["style"] = Enum.EasingStyle.Cubic, ["direction"] = Enum.EasingDirection.Out, ["time"] = 0.08 },        },
+
+        ["fov"] = {
+            ["enabled"] = true,
+            ["size"] = 1000,
+        },
+
+        ["closest point"] = {
+            ["mode"] = 'advanced',
+            ["scale"] = 0.93,
+        },
+
+        ["prediction"] = {
+            ["enabled"] = true,
+            ["mode"] = 'manual',
+            ["manual"] = {
+                ["x"] = 0.05,
+                ["y"] = 0.05,
+                ["z"] = 0.05,
+            },
+            ["auto"] = {
+                ["speed"] = {
+                    ["min"] = 0,
+                    ["max"] = 80,
+                },
+                ["range"] = {
+                    ["min"] = 0.05,
+                    ["max"] = 0.145,
+                },
+            },
+        },
+    },
+
+    ["silentaim"] = {
+        ["enabled"] = true,
+        ["key"] = 'O',
+        ["key mode"] = 'toggle', -- toggle / hold / always
+        ["target key"] = 'Q',
+        ["mode"] = 'target', -- automatic / target
+        ["max distance"] = math.huge,
+        ["yaxis"] = false,
+        ["ystabilizer"] = 0,
+        ["hitchance"] = 100,
+        ["offscreen targeting"] = true,
+
+        ["point"] = 'Head',
+
+        ["closest point"] = {
+            ["mode"] = 'advanced',
+            ["scale"] = 1,
+        },
+
+        ["hitpart override"] = {
+            ["enabled"] = false,
+            ["key"] = 'F',
+            ["mode"] = 'toggle', -- toggle / hold
+            'head',
+        },
+
+        ["prediction"] = {
+            ["enabled"] = false,
+            ["mode"] = 'manual',
+            ["manual"] = {
+                ["x"] = 0.165,
+                ["y"] = 0.165,
+                ["z"] = 0.165,
+            },
+            ["auto"] = {
+                ["scale"] = 1,
+                ["speed"] = {
+                    ["min"] = 0,
+                    ["max"] = 80,
+                },
+                ["range"] = {
+                    ["min"] = 0.05,
+                    ["max"] = 0.145,
+                },
+            },
+        },
+
+        ["client redirection"] = {
+            ["enabled"] = false,
+            ["weapons"] = { '[Revolver]' },
+        },
+
+        ["fov"] = {
+            ["enabled"] = false,
+            ["visible"] = false,
+            ["sync"] = false,
+            ["type"] = 'circle', -- circle / box / 3d
+            ["box"] = {15, 15},
+            ["3d"] = {7, 10, 7},
+            ["circle"] = 800,
+            ["hit scan"] = math.huge,
+
+            ["weapon configs"] = {
+                ["enabled"] = false,
+                ["shotguns"] = {
+                    ["circle"] = 150,
+                    ["box"] = {5, 5},
+                },
+                ["pistols"] = {
+                    ["circle"] = 150,
+                    ["box"] = {4, 4},
+                },
+                ["others"] = {
+                    ["circle"] = 15,
+                    ["box"] = {2, 2},
+                },
+            },
+        },
+    },
+
+    ["triggerbot"] = {
+        ["enabled"] = true,
+        ["key"] = 'B',
+        ["mode"] = 'toggle', -- toggle / hold
+        ["target key"] = 'Q',
+        ["targeting mode"] = 'target', -- automatic / target
+        ["max distance"] = math.huge,
+        ["offscreen targeting"] = true, -- for "target" mode ONLY
+
+        ["radius"] = math.huge,
+        ["delay"] = 0,
+        ["limit gun range"] = false, -- only fire when target is within weapon's Range value
+
+        ["key mode"] = {
+            ["bind"] = 'keybind', -- mouse / keybind
+        },
+
+        ["prediction"] = { 
+            ["enabled"] = true, 
+                ["manual"] = { ["x"] = 0.165, ["y"] = 0.165, ["z"] = 0.165 } },
+
+        ["fov"] = { 
+            ["enabled"] = false,
+            ["type"] = "box", -- circle / box
+            ["visible"] = false, 
+                ["x"] = 10, 
+                ["y"] = 20, 
+                ["z"] = 10,
+                ["circle"] = 900 },
+    },
+
+    ["rage"] = { 
+        ["doubletap"] = {
+            ["enabled"] = false,
+            ["key"] = 'E',
+            ["mode"] = 'toggle', -- toggle / hold
+            ["weapons"] = { "[Revolver]", "[Double-Barrel SG]" },
+        },
+        ["spread modifier"] = {
+            ["enabled"] = true,
+            ["value"] = 0,
+            ["randomizer"] = { ["enabled"] = false, ["value"] = 0.1 + math.random() * 0.3 },
+        },
+
+        ["infinite range"] = {
+            ["enabled"] = true,
+            ["key"] = 'N',
+            ["max range"] = 100000,
+            ["bullet tp"] = false,  -- bullet tp inf range, this ensures it works on the original da hood.
+        },
+
+        ["damage modification"] = {
+            ["enabled"] = true,
+            ["mode"] = 'full', -- 'full' (head) / 'half' (hrp)
+            ["weapons"] = {
+                ["revolver"] = true,
+                ["double-barrel shotgun"] = true,
+            },
+        },
+
+    },
+
+    ["delay changer"] = {
+        ["enabled"] = true,
+        ["delay"] = 0.000000001,
+        ["rapid fire"] = true, 
+        ["rapid fire delay"] = 0.00000001,
+        ["weapon configs"] = {
+            ["enabled"] = false,
+            ["shotguns"] = { ["delay"] = 0.05 },
+            ["pistols"]  = { ["delay"] = 0.01 },
+            ["others"]   = { ["delay"] = 0.02 },
+        },
+    },
+
+    ["hitbox"] = {
+        ["enabled"] = false,
+        ["size"] = 5,
+        ["visualize"] = false,
+    },
+
+    ["avatar changer"] = {
+        ["enabled"] = false,
+            ["mode"] = "username", --username / user id
+            ["target"] = "tagthecrowd",
+            ["target displayname"] = "", --leave blank to automatically apply.
+            ["spoof roblox gui"] = true,
+            ["reapply on spawn"] = true,
+            ["skinny"] = true,
+            ["add aditional items"] = true,
+            ["additional items"] = {
+            ["accessories"] = {74891470, 215718515, 1744060292},
+            ["headless"] = true,
+        }
+    },
+
+    ["skins"] = {
+        ["enabled"] = false,
+        ["options"] = {
+            ["[Double-Barrel SG]"] = "Golden Age",
+            ["[Revolver]"] = "Golden Age",
+            ["[TacticalShotgun]"] = "Patriot",
+            ["[Knife]"] = "Golden Age Tanto",
+        },
+    },
+
+    ["movement"] = {
+        ["enabled"] = true,
+        ["speed"] = { 
+            ["value"] = 400, 
+            ["key"] = 'V', 
+            ["enabled"] = true, 
+                ["glide"] = false, 
+                ["mode"] = 'always' }, -- toggle / hold / always
+        ["jump"]  = { 
+            ["enabled"] = true,
+            ["value"] = 500, 
+            ["key"] = 'Z', 
+            ["mode"] = 'hold' }, -- toggle / hold  
+        ["no tripping"] = true,
+    },
+
+    ["checks"] = {
+        ["forcefield"] = true,
+        ["visible"] = false,
+        ["grabbed"] = true,
+        ["knocked"] = true,
+        ["player knocked"] = false,
+        ["chat"] = true,
+        ["knife"] = true,
+
+        ["silent aim targeting"] = {
+            ["forcefield"] = true,
+            ["visible"] = false,
+            ["grabbed"] = true,
+            ["knocked"] = true,
+            ["player knocked"] = false,
+            ["chat"] = true,
+            ["knife"] = true,
+        },
+        ["camlock targeting"] = {
+            ["forcefield"] = true,
+            ["visible"] = true,
+            ["grabbed"] = true,
+            ["knocked"] = true,
+            ["player knocked"] = false,
+        },
+        ["triggerbot targeting"] = {
+            ["forcefield"] = true,
+            ["visible"] = false,
+            ["grabbed"] = true,
+            ["knocked"] = true,
+            ["player knocked"] = false,
+            ["chat"] = true,
+            ["knife"] = true,
+        },
+    },
+
+    ["esp"] = {
+        ["enabled"] = true,
+        ["key"] = 'T',
+        ["mode"] = 'toggle', -- toggle / hold
+        ["name"] = "name", -- "name" or "displayname"
+        ["font"] = Enum.Font.ArimoBold,
+        ["size"] = 13,
+        ["color"] = Color3.fromRGB(255, 255, 255),
+        ["target color"] = Color3.fromRGB(255, 0, 0),
+    },
+
+    ["utilities"] = {
+        ["inventory helper"] = {
+            ["enabled"] = true,
+            ["key"] = 'U',
+            ["mode"] = 'toggle', -- toggle / hold
+            ["order"] = {
+                [1] = "[Knife]",
+                [2] = "[Revolver]",
+                [3] = "[Double-Barrel SG]",
+                [4] = "[TacticalShotgun]",
+            },
+        },
+    },
+}
+
 shared.azov = shared.azovbeta
 
 do
