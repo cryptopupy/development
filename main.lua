@@ -1,346 +1,3 @@
-shared.azovbeta = {
-    ["globals"] = {
-            ["loader"] = "urkeymustgohere",
-
-        ["show hotkeys"] = true,
-        ["hotkey ui"] = {
-            ["font"] = Enum.Font.Arcade,
-            ["text size"] = 11,
-            ["gap"] = 1,
-            ["show target health"] = true,
-            ["show target distance"] = true,
-            ["effective distance color"] = Color3.fromRGB(85, 255, 85),
-            ["ineffectine distance color"] = Color3.fromRGB(255, 85, 85),
-            ["show can hit"] = true,
-        },
-
-        ["target tracer"] = {
-            ["enabled"]           = true,
-                ["thickness"]         = 1,
-                ["effective color"]   = Color3.fromRGB(255, 85, 85),   
-                ["ineffective color"] = Color3.fromRGB(0, 0, 0), 
-        },
-        ["knife spam"] = {
-            ["key"] = 'G',
-            ["mode"] = 'toggle', -- toggle / hold
-                ["spam delay"] = 0.5,     
-                ["switch delay"] = 0.3,   -- seconds to wait before switching guns
-                ["idle timeout"] = 0.8,   -- seconds of no clicking before switching back to knife
-                ["switch on target"] = true, 
-                ["order"] = { "Pistols", "Shotguns" }, -- when clicking/holding during knife spam you switch to these guns in this order.
-        },
-    },
-
-    ["aimbot"] = {
-        ["enabled"] = true,
-        ["key"] = 'C',
-        ["mode"] = 'toggle', -- toggle / hold
-        ["point"] = 'Head',
-
-        ["smoothing"] = {
-            ["enabled"] = true,
-            ["mode"] = 'auto',
-            ["auto"] = {
-                ["speed"] = { ["min"] = 0, ["max"] = 80 },
-                ["range"] = { ["min"] = 0.05, ["max"] = 0.30 }
-            },
-            ["easing"] = { ["enabled"] = true, ["style"] = Enum.EasingStyle.Cubic, ["direction"] = Enum.EasingDirection.Out, ["time"] = 0.08 },        },
-
-        ["fov"] = {
-            ["enabled"] = true,
-            ["size"] = 1000,
-        },
-
-        ["closest point"] = {
-            ["mode"] = 'advanced',
-            ["scale"] = 0.93,
-        },
-
-        ["prediction"] = {
-            ["enabled"] = true,
-            ["mode"] = 'manual',
-            ["manual"] = {
-                ["x"] = 0.05,
-                ["y"] = 0.05,
-                ["z"] = 0.05,
-            },
-            ["auto"] = {
-                ["speed"] = {
-                    ["min"] = 0,
-                    ["max"] = 80,
-                },
-                ["range"] = {
-                    ["min"] = 0.05,
-                    ["max"] = 0.145,
-                },
-            },
-        },
-    },
-
-    ["silentaim"] = {
-        ["enabled"] = true,
-        ["key"] = 'O',
-        ["key mode"] = 'toggle', -- toggle / hold / always
-        ["target key"] = 'Q',
-        ["mode"] = 'target', -- automatic / target
-        ["max distance"] = math.huge,
-        ["yaxis"] = false,
-        ["ystabilizer"] = 0,
-        ["hitchance"] = 100,
-        ["offscreen targeting"] = true,
-
-        ["point"] = 'Head',
-
-        ["closest point"] = {
-            ["mode"] = 'advanced',
-            ["scale"] = 1,
-        },
-
-        ["hitpart override"] = {
-            ["enabled"] = false,
-            ["key"] = 'F',
-            ["mode"] = 'toggle', -- toggle / hold
-            'head',
-        },
-
-        ["prediction"] = {
-            ["enabled"] = false,
-            ["mode"] = 'manual',
-            ["manual"] = {
-                ["x"] = 0.165,
-                ["y"] = 0.165,
-                ["z"] = 0.165,
-            },
-            ["auto"] = {
-                ["scale"] = 1,
-                ["speed"] = {
-                    ["min"] = 0,
-                    ["max"] = 80,
-                },
-                ["range"] = {
-                    ["min"] = 0.05,
-                    ["max"] = 0.145,
-                },
-            },
-        },
-
-        ["client redirection"] = {
-            ["enabled"] = false,
-            ["weapons"] = { '[Revolver]' },
-        },
-
-        ["fov"] = {
-            ["enabled"] = false,
-            ["visible"] = false,
-            ["sync"] = false,
-            ["type"] = 'circle', -- circle / box / 3d
-            ["box"] = {15, 15},
-            ["3d"] = {7, 10, 7},
-            ["circle"] = 800,
-            ["hit scan"] = math.huge,
-
-            ["weapon configs"] = {
-                ["enabled"] = false,
-                ["shotguns"] = {
-                    ["circle"] = 150,
-                    ["box"] = {5, 5},
-                },
-                ["pistols"] = {
-                    ["circle"] = 150,
-                    ["box"] = {4, 4},
-                },
-                ["others"] = {
-                    ["circle"] = 15,
-                    ["box"] = {2, 2},
-                },
-            },
-        },
-    },
-
-    ["triggerbot"] = {
-        ["enabled"] = true,
-        ["key"] = 'B',
-        ["mode"] = 'toggle', -- toggle / hold
-        ["target key"] = 'Q',
-        ["targeting mode"] = 'target', -- automatic / target
-        ["max distance"] = math.huge,
-        ["offscreen targeting"] = true, -- for "target" mode ONLY
-
-        ["radius"] = math.huge,
-        ["delay"] = 0,
-        ["limit gun range"] = false, -- only fire when target is within weapon's Range value
-
-        ["key mode"] = {
-            ["bind"] = 'keybind', -- mouse / keybind
-        },
-
-        ["prediction"] = { 
-            ["enabled"] = true, 
-                ["manual"] = { ["x"] = 0.165, ["y"] = 0.165, ["z"] = 0.165 } },
-
-        ["fov"] = { 
-            ["enabled"] = false,
-            ["type"] = "box", -- circle / box
-            ["visible"] = false, 
-                ["x"] = 10, 
-                ["y"] = 20, 
-                ["z"] = 10,
-                ["circle"] = 900 },
-    },
-
-    ["rage"] = { 
-        ["doubletap"] = {
-            ["enabled"] = false,
-            ["key"] = 'E',
-            ["mode"] = 'toggle', -- toggle / hold
-            ["weapons"] = { "[Revolver]", "[Double-Barrel SG]" },
-        },
-        ["spread modifier"] = {
-            ["enabled"] = true,
-            ["value"] = 0,
-            ["randomizer"] = { ["enabled"] = false, ["value"] = 0.1 + math.random() * 0.3 },
-        },
-
-        ["infinite range"] = {
-            ["enabled"] = true,
-            ["key"] = 'N',
-            ["max range"] = 100000,
-            ["bullet tp"] = false,  -- bullet tp inf range, this ensures it works on the original da hood.
-        },
-
-        ["damage modification"] = {
-            ["enabled"] = true,
-            ["mode"] = 'full', -- 'full' (head) / 'half' (hrp)
-            ["weapons"] = {
-                ["revolver"] = true,
-                ["double-barrel shotgun"] = true,
-            },
-        },
-
-    },
-
-    ["delay changer"] = {
-        ["enabled"] = true,
-        ["delay"] = 0.000000001,
-        ["rapid fire"] = true, 
-        ["rapid fire delay"] = 0.00000001,
-        ["weapon configs"] = {
-            ["enabled"] = false,
-            ["shotguns"] = { ["delay"] = 0.05 },
-            ["pistols"]  = { ["delay"] = 0.01 },
-            ["others"]   = { ["delay"] = 0.02 },
-        },
-    },
-
-    ["hitbox"] = {
-        ["enabled"] = false,
-        ["size"] = 5,
-        ["visualize"] = false,
-    },
-
-    ["avatar changer"] = {
-        ["enabled"] = false,
-            ["mode"] = "username", --username / user id
-            ["target"] = "tagthecrowd",
-            ["target displayname"] = "", --leave blank to automatically apply.
-            ["spoof roblox gui"] = true,
-            ["reapply on spawn"] = true,
-            ["skinny"] = true,
-            ["add aditional items"] = true,
-            ["additional items"] = {
-            ["accessories"] = {74891470, 215718515, 1744060292},
-            ["headless"] = true,
-        }
-    },
-
-    ["skins"] = {
-        ["enabled"] = false,
-        ["options"] = {
-            ["[Double-Barrel SG]"] = "Golden Age",
-            ["[Revolver]"] = "Golden Age",
-            ["[TacticalShotgun]"] = "Patriot",
-            ["[Knife]"] = "Golden Age Tanto",
-        },
-    },
-
-    ["movement"] = {
-        ["enabled"] = true,
-        ["speed"] = { 
-            ["value"] = 400, 
-            ["key"] = 'V', 
-            ["enabled"] = true, 
-                ["glide"] = false, 
-                ["mode"] = 'always' }, -- toggle / hold / always
-        ["jump"]  = { 
-            ["enabled"] = true,
-            ["value"] = 500, 
-            ["key"] = 'Z', 
-            ["mode"] = 'hold' }, -- toggle / hold  
-        ["no tripping"] = true,
-    },
-
-    ["checks"] = {
-        ["forcefield"] = true,
-        ["visible"] = false,
-        ["grabbed"] = true,
-        ["knocked"] = true,
-        ["player knocked"] = false,
-        ["chat"] = true,
-        ["knife"] = true,
-
-        ["silent aim targeting"] = {
-            ["forcefield"] = true,
-            ["visible"] = false,
-            ["grabbed"] = true,
-            ["knocked"] = true,
-            ["player knocked"] = false,
-            ["chat"] = true,
-            ["knife"] = true,
-        },
-        ["camlock targeting"] = {
-            ["forcefield"] = true,
-            ["visible"] = true,
-            ["grabbed"] = true,
-            ["knocked"] = true,
-            ["player knocked"] = false,
-        },
-        ["triggerbot targeting"] = {
-            ["forcefield"] = true,
-            ["visible"] = false,
-            ["grabbed"] = true,
-            ["knocked"] = true,
-            ["player knocked"] = false,
-            ["chat"] = true,
-            ["knife"] = true,
-        },
-    },
-
-    ["esp"] = {
-        ["enabled"] = true,
-        ["key"] = 'T',
-        ["mode"] = 'toggle', -- toggle / hold
-        ["name"] = "name", -- "name" or "displayname"
-        ["font"] = Enum.Font.ArimoBold,
-        ["size"] = 13,
-        ["color"] = Color3.fromRGB(255, 255, 255),
-        ["target color"] = Color3.fromRGB(255, 0, 0),
-    },
-
-    ["utilities"] = {
-        ["inventory helper"] = {
-            ["enabled"] = true,
-            ["key"] = 'U',
-            ["mode"] = 'toggle', -- toggle / hold
-            ["order"] = {
-                [1] = "[Knife]",
-                [2] = "[Revolver]",
-                [3] = "[Double-Barrel SG]",
-                [4] = "[TacticalShotgun]",
-            },
-        },
-    },
-}
-
 shared.azov = shared.azovbeta
 
 do
@@ -3469,7 +3126,7 @@ end)
                             local inRange = dist <= weaponRange
                             local distColor = inRange 
                                 and (uiCfg["effective distance color"] or Color3.fromRGB(85, 255, 85)) 
-                                or (uiCfg["ineffectine distance color"] or Color3.fromRGB(255, 85, 85))
+                                or (uiCfg["ineffective distance color"] or Color3.fromRGB(255, 85, 85))
                             
                             local r, g, b = math.floor(distColor.R*255), math.floor(distColor.G*255), math.floor(distColor.B*255)
                             local colorStr = string.format("rgb(%d,%d,%d)", r, g, b)
@@ -3513,9 +3170,6 @@ end)
                 table.insert(lines, { text = "walk speed" })
             end
 
-            if Script.Locals.IsKnifeSpamming then
-                table.insert(lines, { text = "knife spam" })
-            end
 
             local irCfgHud = shared.azov["rage"]["infinite range"]
             if irCfgHud and irCfgHud["enabled"] and Script.Locals.InfRangeActive then
@@ -4341,25 +3995,26 @@ end)
                 return
             end
 
-            local factor
+            local factor = { x = 0.02, y = 0.02, z = 0.02 }
             if smoothCfg["mode"] == 'auto' and smoothCfg["auto"] then
                 local spd = 0
                 local hrp = target.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    spd = hrp.AssemblyLinearVelocity.Magnitude
-                end
+                if hrp then spd = hrp.AssemblyLinearVelocity.Magnitude end
                 local sMin = smoothCfg["auto"]["speed"]["min"] or 0
-                local sMax = smoothCfg["auto"]["speed"]["max"] or 80
+                local sMax = smoothCfg["auto"]["speed"]["max"] or 0.8
                 local rMin = smoothCfg["auto"]["range"]["min"] or 0.05
                 local rMax = smoothCfg["auto"]["range"]["max"] or 0.30
                 local t = (sMax ~= sMin) and math.clamp((spd - sMin) / (sMax - sMin), 0, 1) or 0
-                factor = rMin + (rMax - rMin) * t
+                local f = rMin + (rMax - rMin) * t
+                factor = { x = f, y = f, z = f }
             elseif smoothCfg["mode"] == 'manual' then
-                factor = smoothCfg["manual"] or 0.02
-            else
-                factor = 0.02
+                local m = smoothCfg["manual"]
+                if type(m) == "table" then
+                    factor = { x = m.x or 0.02, y = m.y or 0.02, z = m.z or 0.02 }
+                else
+                    factor = { x = m or 0.02, y = m or 0.02, z = m or 0.02 }
+                end
             end
-            factor = math.clamp(factor or 0.1, 0, 1)
 
             local easingCfg = smoothCfg["easing"]
             if easingCfg and easingCfg["enabled"] then
@@ -4367,7 +4022,20 @@ end)
                 local tween = TweenService:Create(Camera, TweenInfo, {CFrame = desired})
                 tween:Play()
             else
-                Camera.CFrame = Camera.CFrame:Lerp(desired, factor)
+                local currX, currY, currZ = Camera.CFrame:ToEulerAnglesYXZ()
+                local targetX, targetY, targetZ = desired:ToEulerAnglesYXZ()
+                
+                local function lerpAngle(a, b, t)
+                    local d = b - a
+                    d = (d + math.pi) % (2 * math.pi) - math.pi
+                    return a + d * math.clamp(t, 0, 1)
+                end
+                
+                local newX = lerpAngle(currX, targetX, factor.x)
+                local newY = lerpAngle(currY, targetY, factor.y)
+                local newZ = lerpAngle(currZ, targetZ, factor.z)
+                
+                Camera.CFrame = CFrame.new(camPos) * CFrame.fromEulerAnglesYXZ(newX, newY, newZ)
             end        end
     end
     do
@@ -5026,18 +4694,6 @@ end)
                 CanTriggerbotShoot = false
             end
 
-            local ksCfg = shared.azov["globals"]["knife spam"]
-            if ksCfg and ksCfg["key"] then
-                local ok2, ksKeyCode = pcall(function() return Enum.KeyCode[ksCfg["key"]:upper()] end)
-                if ok2 and Input.KeyCode == ksKeyCode then
-                    local ksType = ksCfg["mode"] or 'toggle'
-                    if ksType == 'toggle' then
-                        Script.Locals.IsKnifeSpamming = not Script.Locals.IsKnifeSpamming
-                    elseif ksType == 'hold' then
-                        Script.Locals.IsKnifeSpamming = true
-                    end
-                end
-            end
 
             local irCfg = shared.azov["rage"]["infinite range"]
             if irCfg and irCfg["key"] then
@@ -5110,13 +4766,6 @@ end)
                 Script.Locals.RapidFiringLoop = false
             end
 
-            local ksCfgE = shared.azov["globals"]["knife spam"]
-            if ksCfgE and ksCfgE["key"] and (ksCfgE["mode"] or 'toggle') == 'hold' then
-                local ok3, ksKeyE = pcall(function() return Enum.KeyCode[ksCfgE["key"]:upper()] end)
-                if ok3 and Input.KeyCode == ksKeyE and Script and Script.Locals then
-                    Script.Locals.IsKnifeSpamming = false
-                end
-            end
 
             if shared.azov["checks"]["silent aim targeting"]["chat"] and UserInputService:GetFocusedTextBox() then return end
             local jumpCfg2 = shared.azov["movement"]["jump"]
@@ -5225,121 +4874,6 @@ end)
             UpdateDrawings()
             task.spawn(AutomatedPrediction)
 
-            if Script.Locals.IsKnifeSpamming and Self.Character then
-                local ksCfg = shared.azov["globals"]["knife spam"]
-                local spamDelay = ksCfg["spam delay"] or 0
-                local switchDelay = ksCfg["switch delay"] or 0.3
-                local now = tick()
-                Script.Locals.LastKnifeSpam = Script.Locals.LastKnifeSpam or 0
-
-                local currentTool = Self.Character:FindFirstChildOfClass("Tool")
-                local isHoldingGun = currentTool and currentTool:FindFirstChild("Ammo")
-                local backpack = Self:FindFirstChildOfClass("Backpack")
-
-                local isClicking = UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
-                local onTarget = ksCfg["switch on target"] and isClicking and Script.Locals.SilentAimCanHit and Script.Locals.SilentAimTarget
-
-                if isClicking or onTarget then
-                    Script.Locals.KsLastClickTime = now
-                end
-                Script.Locals.KsLastClickTime = Script.Locals.KsLastClickTime or now
-
-                local idleTimeout = ksCfg["idle timeout"] or 0.8
-                local isIdle = (now - Script.Locals.KsLastClickTime) >= idleTimeout
-
-                if not isClicking and not onTarget then
-                    Script.Locals.KnifePriorityIndex = 1
-
-                    if isIdle and not Script.Locals.KnifeSpamFiring then
-                        local hum = Self.Character:FindFirstChildOfClass("Humanoid")
-                        local bp = Self:FindFirstChildOfClass("Backpack")
-                        local knife = Self.Character:FindFirstChild("[Knife]") or (bp and bp:FindFirstChild("[Knife]"))
-                        local held = Self.Character:FindFirstChildOfClass("Tool")
-                        if hum and knife and held and held.Name ~= "[Knife]" then
-                            task.spawn(function() pcall(function() hum:EquipTool(knife) end) end)
-                        end
-                    end
-                end
-                
-                Script.Locals.LastKnifeSpamShoot = Script.Locals.LastKnifeSpamShoot or 0
-                local canShoot = (now - Script.Locals.LastKnifeSpamShoot) >= math.max(0.01, spamDelay)
-                if (onTarget or isClicking) and not Script.Locals.KnifeSpamFiring and not isHoldingGun and canShoot then
-                    task.spawn(function()
-                        Script.Locals.KnifeSpamFiring = true
-                        local order = ksCfg["order"] or { "Pistols", "Shotguns" }
-                        Script.Locals.KnifePriorityIndex = Script.Locals.KnifePriorityIndex or 1
-                        
-                        local gun = nil
-                        local emptyCategory = false
-                        
-                        local cat = order[Script.Locals.KnifePriorityIndex]
-                        if cat then
-                            for _, wname in ipairs(WeaponInfo[cat] or {}) do
-                                local bp = Self:FindFirstChildOfClass("Backpack")
-                                local t = (Self.Character and Self.Character:FindFirstChild(wname)) or (bp and bp:FindFirstChild(wname))
-                                if t then
-                                    local ammo = t:FindFirstChild("Ammo")
-                                    if not ammo or ammo.Value > 0 then 
-                                        gun = t
-                                        break
-                                    else
-                                        emptyCategory = true
-                                    end
-                                end
-                            end
-                        end
-                        
-                        local hum = Self.Character and Self.Character:FindFirstChildOfClass("Humanoid")
-                            if gun and hum then
-                            local currentEquipped = Self.Character:FindFirstChildOfClass("Tool")
-                            if currentEquipped ~= gun then
-                                local bp = Self:FindFirstChildOfClass("Backpack")
-                                local knife = Self.Character:FindFirstChild("[Knife]") or (bp and bp:FindFirstChild("[Knife]"))
-                                if knife then
-                                    pcall(function() hum:EquipTool(knife) end)
-                                    task.wait()
-                                    knife.Parent = bp
-                                    task.wait()
-                                end
-                                task.wait(switchDelay)
-                                pcall(function() hum:EquipTool(gun) end)
-                                task.wait()
-                            end
-                            if gun.Parent == Self.Character then
-                                gun:Activate()
-                                Script.Locals.LastKnifeSpamShoot = now
-                            end
-                            task.wait()
-                        elseif emptyCategory and hum then
-
-                            local bp = Self:FindFirstChildOfClass("Backpack")
-                            local knife = Self.Character:FindFirstChild("[Knife]") or (bp and bp:FindFirstChild("[Knife]"))
-                            if knife then
-                                pcall(function() hum:EquipTool(knife) end)
-                                task.wait(switchDelay)
-                            end
-                            Script.Locals.KnifePriorityIndex = Script.Locals.KnifePriorityIndex + 1
-                            if Script.Locals.KnifePriorityIndex > #order then
-                                Script.Locals.KnifePriorityIndex = 1
-                            end
-                        end
-                        Script.Locals.KnifeSpamFiring = false
-                    end)
-                elseif not isHoldingGun and not Script.Locals.KnifeSpamFiring then
-                    local clampDelay = math.max(0.01, spamDelay)
-                    if now - Script.Locals.LastKnifeSpam >= clampDelay then
-                        Script.Locals.LastKnifeSpam = now
-                        local knife = Self.Character:FindFirstChild("[Knife]") or (backpack and backpack:FindFirstChild("[Knife]"))
-                        if knife then
-                            if knife.Parent == Self.Character then
-                                knife.Parent = backpack
-                            else
-                                knife.Parent = Self.Character
-                            end
-                        end
-                end
-            end
-        end
 
             local irCfg = shared.azov["rage"]["infinite range"]
             if irCfg and irCfg["enabled"] and Script.Locals.InfRangeActive then
