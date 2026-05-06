@@ -45,8 +45,6 @@ do
     setthreadidentity(7)
 end
 
-
-
 do
     local _HttpService = game:GetService("HttpService")
     local _Players = game:GetService("Players")
@@ -93,7 +91,6 @@ do
         end
     end)
 end
-
 
 task.spawn(function()
     task.wait(2)
@@ -158,382 +155,800 @@ end)
     local Mouse = Self:GetMouse()
     local Camera = workspace.CurrentCamera
 
-    local knifedata = {}
+    local AppliedSkins = {};
+    local KnifeData = {};
+    local ToolRegistry = {};
+    local SkinAssets = ReplicatedStorage:FindFirstChild("SkinAssets")
+    local SkinModules = ReplicatedStorage:FindFirstChild("SkinModules")
+    local SkinData = nil;
 
-    local knifeSkins = {
-        ["Golden Age Tanto"] = {soundid = "rbxassetid://5917819099", animationid = "rbxassetid://13473404819", positionoffset = Vector3.new(0, -0.20, -1.2), rotationoffset = Vector3.new(90, 263.7, 180)},
-        ["GPO-Knife"] = {soundid = "rbxassetid://4604390759", animationid = "rbxassetid://14014278925", positionoffset = Vector3.new(0.00, -0.32, -1.07), rotationoffset = Vector3.new(90, -97.4, 90)},
-        ["GPO-Knife Prestige"] = {soundid = "rbxassetid://4604390759", animationid = "rbxassetid://14014278925", positionoffset = Vector3.new(0.00, -0.32, -1.07), rotationoffset = Vector3.new(90, -97.4, 90)},
-        ["Heaven"] = {soundid = "rbxassetid://14489860007", animationid = "rbxassetid://14500266726", positionoffset = Vector3.new(-0.02, -0.82, 0.20), rotationoffset = Vector3.new(64.42, 3.79, 0.00)},
-        ["Love Kukri"] = {soundid = "", animationid = "", positionoffset = Vector3.new(-0.14, 0.14, -1.62), rotationoffset = Vector3.new(-90.00, 180.00, -4.97), particle = true, textureid = "rbxassetid://12124159284"},
-        ["Purple Dagger"] = {soundid = "rbxassetid://17822743153", animationid = "rbxassetid://17824999722", positionoffset = Vector3.new(-0.13, -0.24, -1.80), rotationoffset = Vector3.new(89.05, 96.63, 180.00)},
-        ["Blue Dagger"] = {soundid = "rbxassetid://17822737046", animationid = "rbxassetid://17824995184", positionoffset = Vector3.new(-0.13, -0.24, -1.80), rotationoffset = Vector3.new(89.05, 96.63, 180.00)},
-        ["Green Dagger"] = {soundid = "rbxassetid://17822741762", animationid = "rbxassetid://17825004320", positionoffset = Vector3.new(-0.13, -0.24, -1.07), rotationoffset = Vector3.new(89.05, 96.63, 180.00)},
-        ["Red Dagger"] = {soundid = "rbxassetid://17822952417", animationid = "rbxassetid://17825008844", positionoffset = Vector3.new(-0.13, -0.24, -1.07), rotationoffset = Vector3.new(89.05, 96.63, 180.00)},
-        ["Portal"] = {soundid = "rbxassetid://16058846352", animationid = "rbxassetid://16058633881", positionoffset = Vector3.new(-0.13, -0.35, -0.57), rotationoffset = Vector3.new(89.05, 96.63, 180.00)},
-        ["Emerald Butterfly"] = {soundid = "rbxassetid://14931902491", animationid = "rbxassetid://14918231706", positionoffset = Vector3.new(-0.02, -0.30, -0.65), rotationoffset = Vector3.new(180.00, 90.95, 180.00)},
-        ["Boy"] = {soundid = "rbxassetid://18765078331", animationid = "rbxassetid://18789158908", positionoffset = Vector3.new(-0.02, -0.09, -0.73), rotationoffset = Vector3.new(89.05, -88.11, 180.00)},
-        ["Girl"] = {soundid = "rbxassetid://18765078331", animationid = "rbxassetid://18789162944", positionoffset = Vector3.new(-0.02, -0.16, -0.73), rotationoffset = Vector3.new(89.05, -88.11, 180.00)},
-        ["Dragon"] = {soundid = "rbxassetid://14217789230", animationid = "rbxassetid://14217804400", positionoffset = Vector3.new(-0.02, -0.32, -0.98), rotationoffset = Vector3.new(89.05, 90.95, 180.00)},
-        ["Void"] = {soundid = "rbxassetid://14756591763", animationid = "rbxassetid://14774699952", positionoffset = Vector3.new(-0.02, -0.22, -0.85), rotationoffset = Vector3.new(180.00, 90.95, 180.00)},
-        ["Wild West"] = {soundid = "rbxassetid://16058689026", animationid = "rbxassetid://16058148839", positionoffset = Vector3.new(-0.02, -0.24, -1.15), rotationoffset = Vector3.new(-91.89, 90.95, 180.00)},
-        ["Iced Out"] = {soundid = "rbxassetid://14924261405", animationid = "rbxassetid://18465353361", positionoffset = Vector3.new(0.02, -0.08, 0.99), rotationoffset = Vector3.new(180.00, -90.95, -180.00)},
-        ["Reptile"] = {soundid = "rbxassetid://18765103349", animationid = "rbxassetid://18788955930", positionoffset = Vector3.new(-0.03, -0.06, -0.92), rotationoffset = Vector3.new(168.63, 90.00, -180.00)},
-        ["Emerald"] = {soundid = "", animationid = "", positionoffset = Vector3.new(-0.03, -0.06, -0.92), rotationoffset = Vector3.new(168.63, 90.00, 108.00)},
-        ["Ribbon"] = {soundid = "rbxassetid://130974579277249", animationid = "rbxassetid://124102609796063", positionoffset = Vector3.new(0.02, -0.25, -0.05), rotationoffset = Vector3.new(90.00, 0.00, 180.00)},
-    }
+    local function IsKnifeSkin(name)
+        local n = name:lower():gsub(" ", "");
+        return n == "goldenagetanto" or n == "gpo-knife" or n == "gpo-knifeprestige" or n == "heaven"
+            or n == "lovekukri" or n == "purpledagger" or n == "bluedagger" or n == "greendagger" or n == "reddagger";
+    end;
 
-    local function clearmesh(tool, exclude)
-        local children = tool:GetChildren()
-        for i = 1, #children do
-            local v = children[i]
-            if v:IsA("MeshPart") and v ~= exclude then
-                v:Destroy()
-            end
-        end
-    end
-
-    local function applygun(tool, name)
-        local orig = tool:FindFirstChildOfClass("MeshPart")
-        if not orig then return end
-
-        local skinmodules = ReplicatedStorage:FindFirstChild("SkinModules")
-        if not skinmodules then return end
-
-        local ok, skinmodulesreq = pcall(function()
-            return require(skinmodules)
-        end)
-        if not ok or not skinmodulesreq then return end
-
-        local info = skinmodulesreq[tool.Name] and skinmodulesreq[tool.Name][name]
-        if not info then return end
-
-        clearmesh(tool, orig)
-
-        local skinpart = info.TextureID
-        if typeof(skinpart) == "Instance" then
-            local clone = skinpart:Clone()
-            clone.Parent = tool
-            clone.CFrame = orig.CFrame
-            clone.Name = "CurrentSkin"
-
-            local w = Instance.new("Weld")
-            w.Part0 = clone
-            w.Part1 = orig
-            w.C0 = info.CFrame:Inverse()
-            w.Parent = clone
-
-            orig.Transparency = 1
-        else
-            orig.TextureID = skinpart
-            orig.Transparency = 0
-        end
-
-        local handle = tool:FindFirstChild("Handle")
-        if not handle then return end
-
-        local shoot = handle:FindFirstChild("ShootSound")
-        if shoot then
-            local skinassets = ReplicatedStorage:FindFirstChild("SkinAssets")
-            if skinassets then
-                local gunsounds = skinassets:FindFirstChild("GunShootSounds")
-                if gunsounds then
-                    local sounds = gunsounds:FindFirstChild(tool.Name)
-                    local obj = sounds and sounds:FindFirstChild(name)
-                    if obj then
-                        shoot.SoundId = obj.Value
-                    end
-                end
-            end
-        end
-
-        local skinassets = ReplicatedStorage:FindFirstChild("SkinAssets")
-        if skinassets then
-            local particlefolder = skinassets:FindFirstChild("GunHandleParticle")
-            if particlefolder then
-                local particlesource = particlefolder:FindFirstChild(name)
-                if particlesource then
-                    local pe = particlesource:FindFirstChild("ParticleEmitter")
-                    if pe then
-                        for _, existing in ipairs(handle:GetChildren()) do
-                            if existing:IsA("ParticleEmitter") then
-                                existing:Destroy()
-                            end
-                        end
-                        pe:Clone().Parent = handle
-                    end
-                end
-            end
-        end
-
-        handle:SetAttribute("SkinName", name)
-    end
-
-    local function cleanknife(tool)
-        local data = knifedata[tool]
+    local function CleanKnife(Tool)
+        local data = KnifeData[Tool];
         if data then
             if data.track then
-                data.track:Stop()
-                data.track:Destroy()
-                data.track = nil
-            end
+                data.track:Stop();
+                data.track:Destroy();
+                data.track = nil;
+            end;
             if data.welds then
-                for _, w in ipairs(data.welds) do
-                    if w then w:Destroy() end
-                end
-            end
+                for _, w in next, data.welds do
+                    if w then w:Destroy() end;
+                end;
+            end;
             if data.sounds then
-                for _, s in ipairs(data.sounds) do
-                    if s and s.Parent then s:Destroy() end
-                end
-            end
-        end
-
-        local mesh = tool:FindFirstChild("Default")
+                for _, s in next, data.sounds do
+                    if s and s.Parent then s:Destroy() end;
+                end;
+            end;
+        end;
+        local mesh = Tool:FindFirstChild("Default");
         if mesh then
-            local children = mesh:GetChildren()
-            for i = 1, #children do
-                local v = children[i]
+            for _, v in next, mesh:GetChildren() do
                 if v.Name == "Handle.R" or v:IsA("Model") or (v:IsA("BasePart") and v.Name ~= "Default") then
-                    v:Destroy()
-                end
-            end
-            mesh.Transparency = 0
-        end
+                    v:Destroy();
+                end;
+            end;
+            mesh.Transparency = 0;
+        end;
+        KnifeData[Tool] = nil;
+    end;
 
-        knifedata[tool] = nil
-    end
+    local function ApplyKnife(Character, Tool, SkinName)
+        if not IsKnifeSkin(SkinName) then return end;
+        if Tool.Parent ~= Character then return end;
+        local Humanoid = Character:FindFirstChild("Humanoid");
+        local rhand = Character:FindFirstChild("RightHand");
+        if not Humanoid or not rhand then return end;
 
-    local function applyknife(char, tool, skin)
-        local skinconfig = knifeSkins[skin]
-        if not skinconfig then return end
+        local existing = KnifeData[Tool];
+        if existing and existing.welds and #existing.welds > 0 then
+            local handleR = Tool:FindFirstChild("Default") and Tool:FindFirstChild("Default"):FindFirstChild("Handle.R");
+            if handleR and handleR.Parent then
+                local m6d = handleR:FindFirstChildOfClass("Motor6D");
+                if m6d then
+                    m6d.Part0 = rhand;
+                end;
+                local Animator = Humanoid:FindFirstChildOfClass("Animator");
+                if Animator then
+                    local n = SkinName:lower():gsub(" ", "");
+                    local animId, sndId;
+                    if n == "goldenagetanto" then animId = "rbxassetid://13473404819"; sndId = "rbxassetid://5917819099";
+                    elseif n == "gpo-knife" or n == "gpo-knifeprestige" then animId = "rbxassetid://14014278925"; sndId = "rbxassetid://4604390759";
+                    elseif n == "heaven" then animId = "rbxassetid://14500266726"; sndId = "rbxassetid://14489860007";
+                    elseif n == "purpledagger" then animId = "rbxassetid://17824999722"; sndId = "rbxassetid://17822743153";
+                    elseif n == "bluedagger" then animId = "rbxassetid://17824995184"; sndId = "rbxassetid://17822737046";
+                    elseif n == "greendagger" then animId = "rbxassetid://17825004320"; sndId = "rbxassetid://17822741762";
+                    elseif n == "reddagger" then animId = "rbxassetid://17825008844"; sndId = "rbxassetid://17822952417";
+                    end;
+                    if animId then
+                        if existing.track then
+                            existing.track:Stop();
+                            existing.track:Destroy();
+                            existing.track = nil;
+                        end;
+                        local anim = Instance.new("Animation");
+                        anim.AnimationId = animId;
+                        local track = Animator:LoadAnimation(anim);
+                        track.Looped = false;
+                        track:Play();
+                        existing.track = track;
+                        anim:Destroy();
+                        track.Ended:Once(function()
+                            if existing.track == track then existing.track = nil end;
+                            track:Destroy();
+                        end);
+                    end;
+                    if sndId then
+                        local snd = Instance.new("Sound");
+                        snd.SoundId = sndId;
+                        snd.Parent = Workspace;
+                        snd:Play();
+                        table.insert(existing.sounds, snd);
+                        snd.Ended:Connect(function()
+                            snd:Destroy();
+                        end);
+                    end;
+                end;
+                return;
+            end;
+        end;
 
-        local hum = char:FindFirstChild("Humanoid")
-        local rhand = char:FindFirstChild("RightHand")
-        if not hum or not rhand then return end
+        CleanKnife(Tool);
+        KnifeData[Tool] = { track = nil, welds = {}, sounds = {} };
+        local data = KnifeData[Tool];
+        local mesh = Tool:FindFirstChild("Default");
+        if not mesh then return end;
+        mesh.Transparency = 1;
+        local knives = SkinModules and SkinModules:FindFirstChild("Knives");
+        if not knives then return end;
+        local skinmodel = knives:FindFirstChild(SkinName);
+        if not skinmodel then return end;
+        local clone = skinmodel:Clone();
+        clone.Name = SkinName;
+        local handr = Instance.new("Part");
+        handr.Name = "Handle.R";
+        handr.Transparency = 1;
+        handr.CanCollide = false;
+        handr.Anchored = false;
+        handr.Size = Vector3.new(0.001, 0.001, 0.001);
+        handr.Massless = true;
+        handr.Parent = mesh;
+        local m6d = Instance.new("Motor6D");
+        m6d.Name = "Handle.R";
+        m6d.Part0 = rhand;
+        m6d.Part1 = handr;
+        m6d.Parent = handr;
 
-        cleanknife(tool)
-        knifedata[tool] = {track = nil, welds = {}, sounds = {}}
-        local data = knifedata[tool]
+        local offset, animId, sndId;
+        local n = SkinName:lower():gsub(" ", "");
 
-        local mesh = tool:FindFirstChild("Default")
-        if not mesh then return end
-        mesh.Transparency = 1
+        if n == "goldenagetanto" then
+            offset = CFrame.new(0, -0.20, -1.2) * CFrame.Angles(math.rad(90), math.rad(263.7), math.rad(180));
+            animId = "rbxassetid://13473404819";
+            sndId = "rbxassetid://5917819099";
+        elseif n == "gpo-knife" or n == "gpo-knifeprestige" then
+            offset = CFrame.new(0, -0.32, -1.07) * CFrame.Angles(math.rad(90), math.rad(-97.4), math.rad(90));
+            animId = "rbxassetid://14014278925";
+            sndId = "rbxassetid://4604390759";
+        elseif n == "heaven" then
+            offset = CFrame.new(-0.02, -0.82, 0.20) * CFrame.Angles(math.rad(64.42), math.rad(3.79), math.rad(0));
+            animId = "rbxassetid://14500266726";
+            sndId = "rbxassetid://14489860007";
+        elseif n == "lovekukri" then
+            offset = CFrame.new(-0.14, 0.14, -1.62) * CFrame.Angles(math.rad(-90), math.rad(180), math.rad(-4.97));
+        elseif n == "purpledagger" then
+            offset = CFrame.new(-0.13, -0.24, -1.80) * CFrame.Angles(math.rad(89.05), math.rad(96.63), math.rad(180));
+            animId = "rbxassetid://17824999722";
+            sndId = "rbxassetid://17822743153";
+        elseif n == "bluedagger" then
+            offset = CFrame.new(-0.13, -0.24, -1.80) * CFrame.Angles(math.rad(89.05), math.rad(96.63), math.rad(180));
+            animId = "rbxassetid://17824995184";
+            sndId = "rbxassetid://17822737046";
+        elseif n == "greendagger" then
+            offset = CFrame.new(-0.13, -0.24, -1.07) * CFrame.Angles(math.rad(89.05), math.rad(96.63), math.rad(180));
+            animId = "rbxassetid://17825004320";
+            sndId = "rbxassetid://17822741762";
+        elseif n == "reddagger" then
+            offset = CFrame.new(-0.13, -0.24, -1.07) * CFrame.Angles(math.rad(89.05), math.rad(96.63), math.rad(180));
+            animId = "rbxassetid://17825008844";
+            sndId = "rbxassetid://17822952417";
+        end;
 
-        local skinmodules = ReplicatedStorage:FindFirstChild("SkinModules")
-        if not skinmodules then return end
-        local knives = skinmodules:FindFirstChild("Knives")
-        if not knives then return end
-
-        local skinmodel = knives:FindFirstChild(skin)
-        if not skinmodel then return end
-        local clone = skinmodel:Clone()
-        clone.Name = skin
-
-        local handr = Instance.new("Part")
-        handr.Name = "Handle.R"
-        handr.Transparency = 1
-        handr.CanCollide = false
-        handr.Anchored = false
-        handr.Size = Vector3.new(0.001, 0.001, 0.001)
-        handr.Massless = true
-        handr.Parent = mesh
-
-        local m6d = Instance.new("Motor6D")
-        m6d.Name = "Handle.R"
-        m6d.Part0 = rhand
-        m6d.Part1 = handr
-        m6d.Parent = handr
-
-        local offset = CFrame.new(skinconfig.positionoffset) * CFrame.Angles(math.rad(skinconfig.rotationoffset.X), math.rad(skinconfig.rotationoffset.Y), math.rad(skinconfig.rotationoffset.Z))
+        if not offset then return end;
 
         if clone:IsA("Model") then
             if not clone.PrimaryPart then
-                local children = clone:GetChildren()
-                for i = 1, #children do
-                    local c = children[i]
+                for _, c in next, clone:GetChildren() do
                     if c:IsA("BasePart") then
-                        clone.PrimaryPart = c
-                        break
-                    end
-                end
-            end
+                        clone.PrimaryPart = c;
+                        break;
+                    end;
+                end;
+            end;
             if clone.PrimaryPart then
-                local descendants = clone:GetDescendants()
-                for i = 1, #descendants do
-                    local p = descendants[i]
+                for _, p in next, clone:GetDescendants() do
                     if p:IsA("BasePart") then
-                        p.CanCollide = false
-                        p.Massless = true
-                        p.Anchored = false
-                        local w = Instance.new("Weld")
-                        w.Part0 = handr
-                        w.Part1 = p
-                        w.C0 = offset
-                        w.C1 = p.CFrame:ToObjectSpace(clone.PrimaryPart.CFrame)
-                        w.Parent = p
-                        table.insert(data.welds, w)
-                    end
-                end
-            end
-            clone.Parent = mesh
+                        p.CanCollide = false;
+                        p.Massless = true;
+                        p.Anchored = false;
+                        local w = Instance.new("Weld");
+                        w.Part0 = handr;
+                        w.Part1 = p;
+                        w.C0 = offset;
+                        w.C1 = p.CFrame:ToObjectSpace(clone.PrimaryPart.CFrame);
+                        w.Parent = p;
+                        table.insert(data.welds, w);
+                    end;
+                end;
+            end;
+            clone.Parent = mesh;
         elseif clone:IsA("BasePart") then
-            clone.CanCollide = false
-            clone.Massless = true
-            clone.Anchored = false
+            clone.CanCollide = false;
+            clone.Massless = true;
+            clone.Anchored = false;
+            clone.Parent = mesh;
+            local w = Instance.new("Weld");
+            w.Part0 = handr;
+            w.Part1 = clone;
+            w.C0 = offset;
+            w.Parent = clone;
+            table.insert(data.welds, w);
+        end;
 
-            if clone:IsA("MeshPart") and skinconfig.textureid then
-                clone.TextureID = skinconfig.textureid
-            end
-
-            if skinconfig.particle then
-                local skinassets = ReplicatedStorage:FindFirstChild("SkinAssets")
-                if skinassets then
-                    local particlefolder = skinassets:FindFirstChild("GunHandleParticle")
-                    if particlefolder then
-                        local particlesource = particlefolder:FindFirstChild(skin)
-                        if particlesource then
-                            local pe = particlesource:FindFirstChild("ParticleEmitter")
-                            if pe then
-                                pe:Clone().Parent = clone
-                            end
-                        end
-                    end
-                end
-            end
-
-            clone.Parent = mesh
-            local w = Instance.new("Weld")
-            w.Part0 = handr
-            w.Part1 = clone
-            w.C0 = offset
-            w.Parent = clone
-            table.insert(data.welds, w)
-        end
-
-        local animator = hum:FindFirstChildOfClass("Animator")
-        if not animator then
-            animator = Instance.new("Animator")
-            animator.Parent = hum
-        end
-        if skinconfig.animationid and skinconfig.animationid ~= "" then
-            local anim = Instance.new("Animation")
-            anim.AnimationId = skinconfig.animationid
-            local track = animator:LoadAnimation(anim)
-            track.Looped = false
-            track:Play()
-            data.track = track
-            anim:Destroy()
+        local Animator = Humanoid:FindFirstChildOfClass("Animator");
+        if not Animator then
+            Animator = Instance.new("Animator");
+            Animator.Parent = Humanoid;
+        end;
+        if animId then
+            local anim = Instance.new("Animation");
+            anim.AnimationId = animId;
+            local track = Animator:LoadAnimation(anim);
+            track.Looped = false;
+            track:Play();
+            data.track = track;
+            anim:Destroy();
             track.Ended:Once(function()
                 if data.track == track then
-                    data.track = nil
-                end
-                track:Destroy()
-            end)
-        end
-        if skinconfig.soundid and skinconfig.soundid ~= "" then
-            local snd = Instance.new("Sound")
-            snd.SoundId = skinconfig.soundid
-            snd.Parent = Workspace
-            snd:Play()
-            table.insert(data.sounds, snd)
+                    data.track = nil;
+                end;
+                track:Destroy();
+            end);
+        end;
+        if sndId then
+            local snd = Instance.new("Sound");
+            snd.SoundId = sndId;
+            snd.Parent = Workspace;
+            snd:Play();
+            table.insert(data.sounds, snd);
             snd.Ended:Connect(function()
-                snd:Destroy()
-            end)
-        end
+                snd:Destroy();
+            end);
+        end;
+    end;
 
-        tool:SetAttribute("CurrentKnifeSkin", skin)
-    end
+    local function LoadSkinData()
+        if SkinData then return SkinData end;
+        if SkinModules and SkinModules:IsA("ModuleScript") then
+            local success, result = pcall(require, SkinModules);
+            if success then SkinData = result end;
+        end;
+        return SkinData;
+    end;
 
-    local toolregistry = {}
+    local function GetSkinInfo(weaponName, skinName)
+        local data = LoadSkinData();
+        if not data then return nil end;
+        local weaponSkins = data[weaponName];
+        if not weaponSkins then
+            local bracketName = "[" .. weaponName:gsub("%[", ""):gsub("%]", "") .. "]";
+            weaponSkins = data[bracketName];
+        end;
+        if not weaponSkins then return nil end;
+        local info = weaponSkins[skinName];
+        if not info then
+            info = weaponSkins[skinName:gsub("-", " ")];
+        end;
+        if not info then
+            info = weaponSkins[skinName:gsub("-", "")];
+        end;
+        return info;
+    end;
 
-    local function setuptool(tool)
-        if not tool:IsA("Tool") then return end
-        if toolregistry[tool] then return end
-        toolregistry[tool] = true
+    local function FindSourceMesh(skinName, meshRef, isKnife)
+        if not SkinModules then return nil end;
+        if isKnife then
+            local cleanSkin = skinName:lower():gsub(" ", "");
+            local KnivesFolder = SkinModules:FindFirstChild("Knives");
+            if KnivesFolder then
+                for _, child in next, KnivesFolder:GetChildren() do
+                    if child:IsA("MeshPart") then
+                        local cleanName = child.Name:lower():gsub(" ", "");
+                        if child.Name == skinName or cleanName == cleanSkin then
+                            return child;
+                        end;
+                    elseif child:IsA("Folder") or child:IsA("Model") then
+                        local cleanName = child.Name:lower():gsub(" ", "");
+                        if child.Name == skinName or cleanName == cleanSkin then
+                            for _, sub in next, child:GetChildren() do
+                                if sub:IsA("MeshPart") then
+                                    return sub;
+                                end;
+                            end;
+                        end;
+                    end;
+                end;
+            end;
+            if SkinAssets then
+                local KnifeFolder = SkinAssets:FindFirstChild("KnifeMeshes") or SkinAssets:FindFirstChild("Knives");
+                if KnifeFolder then
+                    for _, child in next, KnifeFolder:GetChildren() do
+                        if child:IsA("MeshPart") then
+                            local cleanName = child.Name:lower():gsub(" ", "");
+                            if child.Name == skinName or cleanName == cleanSkin then
+                                return child;
+                            end;
+                        elseif child:IsA("Folder") or child:IsA("Model") then
+                            local cleanName = child.Name:lower():gsub(" ", "");
+                            if child.Name == skinName or cleanName == cleanSkin then
+                                for _, sub in next, child:GetChildren() do
+                                    if sub:IsA("MeshPart") then
+                                        return sub;
+                                    end;
+                                end;
+                            end;
+                        end;
+                    end;
+                end;
+            end;
+            return nil;
+        end;
+        local MeshesFolder = SkinModules:FindFirstChild("Meshes");
+        if not MeshesFolder then return nil end;
+        local folderNames = { skinName, skinName:gsub(" ", ""), skinName:gsub(" ", "_") };
+        for _, folderName in next, folderNames do
+            local skinFolder = MeshesFolder:FindFirstChild(folderName);
+            if skinFolder then
+                if meshRef then
+                    for _, child in next, skinFolder:GetChildren() do
+                        if child:IsA("MeshPart") then
+                            local cleanChild = child.Name:lower():gsub(" ", ""):gsub("-", "");
+                            local cleanRef = meshRef:lower():gsub(" ", ""):gsub("-", "");
+                            if child.Name == meshRef or cleanChild == cleanRef then
+                                return child;
+                            end;
+                        end;
+                    end;
+                end;
+                for _, child in next, skinFolder:GetChildren() do
+                    if child:IsA("MeshPart") then
+                        return child;
+                    end;
+                end;
+            end;
+        end;
+        if SkinAssets then
+            local GunMeshes = SkinAssets:FindFirstChild("GunMeshes");
+            if GunMeshes then
+                for _, folderName in next, folderNames do
+                    local skinFolder = GunMeshes:FindFirstChild(folderName);
+                    if skinFolder then
+                        for _, child in next, skinFolder:GetChildren() do
+                            if child:IsA("MeshPart") then
+                                return child;
+                            end;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+        return nil;
+    end;
 
-        tool.Equipped:Connect(function()
-            local skinCfg = shared.azov["skins"]
-            if not skinCfg["enabled"] then return end
+    local function GetShootSound(weaponName, skinName)
+        if not SkinAssets then return nil end;
+        local GunShootSounds = SkinAssets:FindFirstChild("GunShootSounds");
+        if not GunShootSounds then return nil end;
+        local WeaponFolder = GunShootSounds:FindFirstChild(weaponName);
+        if not WeaponFolder then return nil end;
+        local SoundValue = WeaponFolder:FindFirstChild(skinName);
+        if SoundValue and SoundValue:IsA("StringValue") then
+            return SoundValue.Value;
+        end;
+        return nil;
+    end;
 
-            local char = tool.Parent
-            if char ~= Self.Character then return end
+    local function RemoveSkinFromTool(Tool)
+        if not Tool or not AppliedSkins[Tool] then return end;
+        CleanKnife(Tool);
+        local original = AppliedSkins[Tool];
+        if original.Connections then
+            for _, connection in next, original.Connections do
+                if connection and connection.Connected then
+                    connection:Disconnect();
+                end;
+            end;
+        end;
+        for _, child in next, original.ClonedChildren or {} do
+            if child and child.Parent then
+                child:Destroy();
+            end;
+        end;
+        if original.Default and original.Default.Parent then
+            for _, child in next, original.Default:GetChildren() do
+                if child.Name == "\0" then
+                    child:Destroy();
+                end;
+            end;
+            original.Default.Transparency = original.OriginalTransparency or 0;
+            original.Default.TextureID = original.OriginalTextureID or "";
+        end;
+        if original.ShootSound and original.OriginalShootSoundId then
+            original.ShootSound.SoundId = original.OriginalShootSoundId;
+        end;
+        local Handle = Tool:FindFirstChild("Handle");
+        if Handle then
+            Handle:SetAttribute("SkinName", original.OriginalSkinName or "");
+        end;
+        AppliedSkins[Tool] = nil;
+    end;
 
-            local skin = skinCfg["options"][tool.Name]
-            if not skin or skin == "" then return end
-
-            if tool.Name == "[Knife]" then
-                applyknife(char, tool, skin)
+    local function ApplySkinToTool(Tool, SkinName)
+        if not Tool then return end;
+        if AppliedSkins[Tool] and AppliedSkins[Tool].SkinName == SkinName then return end;
+        local Handle = Tool:FindFirstChild("Handle");
+        if not Handle then return end;
+        local default = Tool:FindFirstChild("Default");
+        if not default or not default:IsA("MeshPart") then
+            default = Handle:FindFirstChildOfClass("MeshPart");
+            if not default then
+                for _, child in next, Tool:GetDescendants() do
+                    if child:IsA("MeshPart") then
+                        default = child;
+                        break;
+                    end;
+                end;
+            end;
+        end;
+        if not default then return end;
+        local ShootSound = nil;
+        for _, child in next, Tool:GetDescendants() do
+            if child:IsA("Sound") and (child.Name == "Shoot" or child.Name == "ShootSound") then
+                ShootSound = child;
+                break;
+            end;
+        end;
+        if AppliedSkins[Tool] then
+            RemoveSkinFromTool(Tool);
+        end;
+        AppliedSkins[Tool] = {
+            SkinName = SkinName,
+            OriginalTextureID = default.TextureID,
+            OriginalTransparency = default.Transparency,
+            OriginalSkinName = Handle:GetAttribute("SkinName") or "",
+            Default = default,
+            ShootSound = ShootSound,
+            OriginalShootSoundId = ShootSound and ShootSound.SoundId or nil,
+            ClonedChildren = {},
+            Connections = {},
+        };
+        Handle:SetAttribute("SkinName", SkinName);
+        local attrConn = Handle:GetAttributeChangedSignal("SkinName"):Connect(function()
+            if Handle:GetAttribute("SkinName") ~= SkinName then
+                Handle:SetAttribute("SkinName", SkinName);
+            end;
+        end);
+        table.insert(AppliedSkins[Tool].Connections, attrConn);
+        local isKnife = Tool.Name:lower():find("knife") ~= nil or Tool.Name == "[Knife]";
+        local weaponName = Tool.Name:lower():sub(2, -2);
+        local skinInfo = GetSkinInfo(Tool.Name, SkinName);
+        local existingFake = default:FindFirstChildOfClass("MeshPart");
+        if existingFake then
+            existingFake:Destroy();
+        end;
+        local mesh = nil;
+        if isKnife then
+            mesh = FindSourceMesh(SkinName, nil, true);
+        else
+            if SkinModules then
+                local MeshesFolder = SkinModules:FindFirstChild("Meshes");
+                if MeshesFolder then
+                    local skinFolder = MeshesFolder:FindFirstChild(SkinName)
+                        or MeshesFolder:FindFirstChild(SkinName:gsub(" ", ""))
+                        or MeshesFolder:FindFirstChild(SkinName:gsub(" ", "_"))
+                        or MeshesFolder:FindFirstChild(SkinName:gsub("-", " "))
+                        or MeshesFolder:FindFirstChild(SkinName:gsub("-", ""));
+                    if skinFolder then
+                        if skinFolder:IsA("MeshPart") then
+                            mesh = skinFolder;
+                        else
+                            mesh = skinFolder:GetChildren();
+                        end;
+                    end;
+                end;
+                if not mesh then
+                    local GunModels = SkinModules:FindFirstChild("GunModels");
+                    if GunModels then
+                        local model = GunModels:FindFirstChild(SkinName)
+                        or GunModels:FindFirstChild("[" .. SkinName .. "]")
+                        or GunModels:FindFirstChild(SkinName:gsub("-", " "))
+                        or GunModels:FindFirstChild(SkinName:gsub("-", ""));
+                        if model then
+                            if model:IsA("MeshPart") then
+                                mesh = model;
+                            elseif model:IsA("Model") then
+                                mesh = model:FindFirstChildOfClass("MeshPart");
+                            end;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+        if mesh then
+            local newMesh = nil;
+            if typeof(mesh) == "Instance" and mesh:IsA("MeshPart") then
+                newMesh = mesh;
+            elseif type(mesh) == "table" then
+                for _, child in next, mesh do
+                    if typeof(child) == "Instance" and child:IsA("MeshPart") then
+                        local lowered = child.Name:lower();
+                        if lowered:find("rpg") and weaponName == "rpg" then
+                            newMesh = child; break;
+                        elseif lowered:find("aug") and weaponName == "aug" then
+                            newMesh = child; break;
+                        elseif lowered:find("tac") and weaponName == "tacticalshotgun" then
+                            newMesh = child; break;
+                        elseif lowered:find("rev") and weaponName == "revolver" then
+                            newMesh = child; break;
+                        elseif (lowered:find("db") or lowered:find("double")) and (weaponName == "double-barrel sg" or weaponName == "double-barrelsg") then
+                            newMesh = child; break;
+                        elseif lowered:find("knife") and isKnife then
+                            newMesh = child; break;
+                        elseif lowered:find("rifle") and weaponName == "rifle" then
+                            newMesh = child; break;
+                        elseif lowered:find("flame") and weaponName == "flamethrower" then
+                            newMesh = child; break;
+                        end;
+                    end;
+                end;
+            end;
+            if newMesh and not isKnife then
+                local newFake = newMesh:Clone();
+                newFake.Anchored = false;
+                newFake.CanCollide = false;
+                newFake.CFrame = default.CFrame;
+                local skinCFrame = (skinInfo and skinInfo.CFrame and typeof(skinInfo.CFrame) == "CFrame") and skinInfo.CFrame or CFrame.new();
+                local weld = Instance.new("Weld");
+                weld.Part0 = newFake;
+                weld.Part1 = default;
+                weld.C0 = skinCFrame:Inverse();
+                weld.Name = "\0";
+                weld.Parent = newFake;
+                newFake.Name = "\0";
+                newFake.Parent = Tool;
+                default.Transparency = 1;
+            end;
+        else
+            if skinInfo then
+                local textureValue = skinInfo.TextureID;
+                if textureValue then
+                    if typeof(textureValue) == "Instance" and textureValue:IsA("MeshPart") then
+                        local clone = textureValue:Clone();
+                        clone.Anchored = false;
+                        clone.CanCollide = false;
+                        clone.CFrame = default.CFrame;
+                        clone.Name = "\0";
+                        clone.Parent = Tool;
+                        local skinCFrame = (skinInfo.CFrame and typeof(skinInfo.CFrame) == "CFrame") and skinInfo.CFrame or CFrame.new();
+                        local weld = Instance.new("Weld");
+                        weld.Part0 = clone;
+                        weld.Part1 = default;
+                        weld.C0 = skinCFrame:Inverse();
+                        weld.Name = "\0";
+                        weld.Parent = clone;
+                        default.Transparency = 1;
+                    elseif type(textureValue) == "string" then
+                        default.TextureID = textureValue;
+                        default.Transparency = 0;
+                    end;
+                end;
+            end;
+        end;
+        for _, child in next, Handle:GetChildren() do
+            if #child.Name == 0 then
+                child:Destroy();
+            end;
+        end;
+        if SkinAssets then
+            local GunHandleParticle = SkinAssets:FindFirstChild("GunHandleParticle");
+            if GunHandleParticle then
+                local particleFolder = GunHandleParticle:FindFirstChild(SkinName)
+                    or GunHandleParticle:FindFirstChild(SkinName:gsub("-", " "))
+                    or GunHandleParticle:FindFirstChild(SkinName:gsub("-", ""));
+                if particleFolder then
+                    local emitter = particleFolder:FindFirstChildOfClass("ParticleEmitter");
+                    if emitter then
+                        local clonedParticle = emitter:Clone();
+                        clonedParticle.Parent = Handle;
+                        clonedParticle.Name = "\0";
+                        table.insert(AppliedSkins[Tool].ClonedChildren, clonedParticle);
+                    end;
+                end;
+            end;
+        end;
+        if isKnife and SkinAssets then
+            local SkinScripts = SkinAssets:FindFirstChild("SkinScripts");
+            if SkinScripts then
+                for _, folder in next, SkinScripts:GetChildren() do
+                    if folder.Name:lower():gsub(" ", "") == SkinName:lower():gsub(" ", "") then
+                        local sound = folder:FindFirstChildOfClass("Sound");
+                        if sound then
+                            local cloned = sound:Clone();
+                            cloned.Name = "\0";
+                            cloned.Parent = Handle;
+                            cloned:Play();
+                            game.Debris:AddItem(cloned, 3);
+                        end;
+                        for _, obj in next, folder:GetDescendants() do
+                            if obj:IsA("Sound") or obj:IsA("StringValue") then
+                                local objLower = obj.Name:lower():gsub(" ", "");
+                                if objLower == "equipsfx" or objLower == "sfx" or objLower == "equip" or objLower == "tantoequip" then
+                                    AppliedSkins[Tool].KnifeEquipSound = obj:IsA("Sound") and obj.SoundId or obj.Value;
+                                elseif objLower == "attacksfx" or objLower == "attack" then
+                                    AppliedSkins[Tool].KnifeAttackSound = obj:IsA("Sound") and obj.SoundId or obj.Value;
+                                end;
+                            end;
+                        end;
+                        break;
+                    end;
+                end;
+            end;
+            local SkinScriptsStorage = SkinAssets:FindFirstChild("SkinScriptsStorage");
+            if SkinScriptsStorage then
+                for _, folder in next, SkinScriptsStorage:GetChildren() do
+                    if folder.Name:lower():gsub(" ", "") == SkinName:lower():gsub(" ", "") then
+                        for _, anim in next, folder:GetDescendants() do
+                            if anim:IsA("Animation") then
+                                local animLower = anim.Name:lower():gsub(" ", "");
+                                if animLower == "knife" or animLower == "equipknife" or animLower == "knifeequip" or animLower == "tantoequip" then
+                                    AppliedSkins[Tool].KnifeEquipAnim = anim;
+                                    break;
+                                end;
+                            end;
+                        end;
+                        break;
+                    end;
+                end;
+            end;
+            local KnifeSkinAnimation = SkinAssets:FindFirstChild("KnifeSkinAnimation");
+            if KnifeSkinAnimation then
+                for _, folder in next, KnifeSkinAnimation:GetChildren() do
+                    if folder.Name:lower():gsub(" ", "") == SkinName:lower():gsub(" ", "") then
+                        for _, anim in next, folder:GetDescendants() do
+                            if anim:IsA("Animation") then
+                                AppliedSkins[Tool].KnifeAttackAnim = anim;
+                                break;
+                            end;
+                        end;
+                        break;
+                    end;
+                end;
+            end;
+        end;
+        if isKnife and SkinName:lower():gsub(" ", "") == "goldenagetanto" then
+            if not AppliedSkins[Tool].KnifeEquipAnim then
+                local anim = Instance.new("Animation");
+                anim.AnimationId = "rbxassetid://13473404819";
+                AppliedSkins[Tool].KnifeEquipAnim = anim;
             else
-                applygun(tool, skin)
-            end
-        end)
+                AppliedSkins[Tool].KnifeEquipAnim.AnimationId = "rbxassetid://13473404819";
+            end;
+        end;
+        if isKnife and (SkinName:lower():gsub(" ", "") == "gpoknife" or SkinName:lower():gsub(" ", "") == "gpoknifeprestige") then
+            if not AppliedSkins[Tool].KnifeEquipAnim then
+                local anim = Instance.new("Animation");
+                anim.AnimationId = "rbxassetid://102007904524177";
+                AppliedSkins[Tool].KnifeEquipAnim = anim;
+            else
+                AppliedSkins[Tool].KnifeEquipAnim.AnimationId = "rbxassetid://102007904524177";
+            end;
+        end;
+        local soundId = GetShootSound(Tool.Name, SkinName);
+        if soundId and AppliedSkins[Tool].ShootSound then
+            AppliedSkins[Tool].ShootSound.SoundId = soundId;
+        end;
+    end;
 
-        tool.Unequipped:Connect(function()
-            if tool.Name == "[Knife]" then
-                local data = knifedata[tool]
-                if not data then return end
-                if data.welds then
-                    for _, w in ipairs(data.welds) do
-                        if w then w:Destroy() end
-                    end
-                    data.welds = {}
-                end
-                if data.sounds then
-                    for _, s in ipairs(data.sounds) do
-                        if s and s.Parent then s:Destroy() end
-                    end
-                    data.sounds = {}
-                end
-                local mesh = tool:FindFirstChild("Default")
-                if mesh then
-                    local children = mesh:GetChildren()
-                    for i = 1, #children do
-                        local v = children[i]
-                        if v.Name == "Handle.R" or v:IsA("Model") or (v:IsA("MeshPart") and v.Name ~= "Default") then
-                            v:Destroy()
-                        end
-                    end
-                    mesh.Transparency = 0
-                end
-            end
-        end)
+    local function ProcessTool(Tool)
+        if ToolRegistry[Tool] then return end;
+        ToolRegistry[Tool] = true;
+        local SkinChangerCfg = shared.azov["skins"];
+        if not SkinChangerCfg["enabled"] then return end;
+        local Skins = SkinChangerCfg["options"];
+        local ConfiguredSkin = Skins[Tool.Name];
+        if not ConfiguredSkin then
+            local stripped = Tool.Name:gsub("%[", ""):gsub("%]", "");
+            ConfiguredSkin = Skins["[" .. stripped .. "]"];
+        end;
+        if not ConfiguredSkin or ConfiguredSkin == "" or ConfiguredSkin == "None" then return end;
+        local isKnife = Tool.Name:lower():find("knife") ~= nil or Tool.Name == "[Knife]";
+        if isKnife and IsKnifeSkin(ConfiguredSkin) then
+            ApplySkinToTool(Tool, ConfiguredSkin);
+            local equipConn;
+            equipConn = Tool.Equipped:Connect(function()
+                if not AppliedSkins[Tool] then
+                    if equipConn then equipConn:Disconnect() end;
+                    return;
+                end;
+                local char = Tool.Parent;
+                if char ~= Self.Character then return end;
+                ApplyKnife(char, Tool, ConfiguredSkin);
+            end);
+            if not AppliedSkins[Tool].Connections then
+                AppliedSkins[Tool].Connections = {};
+            end;
+            table.insert(AppliedSkins[Tool].Connections, equipConn);
+            if Self.Character and Tool.Parent == Self.Character then
+                ApplyKnife(Self.Character, Tool, ConfiguredSkin);
+            end;
+            if AppliedSkins[Tool] and (AppliedSkins[Tool].KnifeAttackAnim or AppliedSkins[Tool].KnifeAttackSound) then
+                local attackConnection;
+                attackConnection = Tool.Activated:Connect(function()
+                    local skinData = AppliedSkins[Tool];
+                    if not skinData then
+                        if attackConnection then attackConnection:Disconnect() end;
+                        return;
+                    end;
+                    if skinData.KnifeAttackSound then
+                        local sound = Instance.new("Sound");
+                        sound.SoundId = skinData.KnifeAttackSound;
+                        sound.Volume = 1;
+                        sound.Parent = Tool:FindFirstChild("Handle") or Tool;
+                        sound:Play();
+                        game.Debris:AddItem(sound, 3);
+                    end;
+                    if skinData.KnifeAttackAnim then
+                        local Character = Self.Character;
+                        if Character then
+                            local Humanoid = Character:FindFirstChildOfClass("Humanoid");
+                            if Humanoid then
+                                local Animator = Humanoid:FindFirstChildOfClass("Animator");
+                                if not Animator then
+                                    Animator = Instance.new("Animator");
+                                    Animator.Parent = Humanoid;
+                                end;
+                                local anim = Instance.new("Animation");
+                                anim.AnimationId = skinData.KnifeAttackAnim.AnimationId;
+                                local track = Animator:LoadAnimation(anim);
+                                track.Priority = Enum.AnimationPriority.Action;
+                                track:Play();
+                                anim:Destroy();
+                            end;
+                        end;
+                    end;
+                end);
+                table.insert(AppliedSkins[Tool].Connections, attackConnection);
+            end;
+        else
+            ApplySkinToTool(Tool, ConfiguredSkin);
+            Tool.Equipped:Connect(function()
+                local char = Tool.Parent;
+                if char ~= Self.Character then return end;
+                ApplySkinToTool(Tool, ConfiguredSkin);
+            end);
+            if Self.Character and Tool.Parent == Self.Character then
+                ApplySkinToTool(Tool, ConfiguredSkin);
+            end;
+        end;
+    end;
 
-        if tool.Parent == Self.Character then
-            local skinCfg = shared.azov["skins"]
-            if not skinCfg["enabled"] then return end
+    local function ProcessCharacter(Character)
+        if not Character then return end;
+        for _, Child in next, Character:GetChildren() do
+            if Child:IsA("Tool") then
+                ProcessTool(Child);
+            end;
+        end;
+        Character.ChildAdded:Connect(function(Child)
+            if Child:IsA("Tool") then
+                task.wait(0.1);
+                ProcessTool(Child);
+            end;
+        end);
+    end;
 
-            local skin = skinCfg["options"][tool.Name]
-            if skin and skin ~= "" then
-                if tool.Name == "[Knife]" then
-                    task.spawn(function()
-                        applyknife(Self.Character, tool, skin)
-                    end)
-                else
-                    task.spawn(function()
-                        applygun(tool, skin)
-                    end)
-                end
-            end
-        end
-    end
+    local function ProcessBackpack(Backpack)
+        if not Backpack then return end;
+        for _, Tool in next, Backpack:GetChildren() do
+            if Tool:IsA("Tool") then
+                ProcessTool(Tool);
+            end;
+        end;
+        Backpack.ChildAdded:Connect(function(Tool)
+            if Tool:IsA("Tool") then
+                task.wait(0.1);
+                ProcessTool(Tool);
+            end;
+        end);
+    end;
 
-    local function watchchar(char)
-        if not char then return end
-        local children = char:GetChildren()
-        for i = 1, #children do
-            local v = children[i]
-            if v:IsA("Tool") then
-                setuptool(v)
-            end
-        end
-        char.ChildAdded:Connect(function(v)
-            if v:IsA("Tool") then
-                setuptool(v)
-            end
-        end)
-    end
-
+    LoadSkinData();
+    local Character = Self.Character or Self.CharacterAdded:Wait();
+    local Backpack = Self:WaitForChild("Backpack", 5);
+    ProcessCharacter(Character);
+    if Backpack then ProcessBackpack(Backpack) end;
+    Self.CharacterAdded:Connect(function(NewCharacter)
+        task.wait(0.5);
+        ProcessCharacter(NewCharacter);
+        local NewBackpack = Self:WaitForChild("Backpack", 5);
+        if NewBackpack then ProcessBackpack(NewBackpack) end;
+    end);
 
     local IsFiringRapid  = false
     local LastRapidFire  = 0
@@ -548,44 +963,70 @@ end)
         return nil
     end
 
-    local function PatchTool(Tool)
+    local lastrapidfire = 0
+
+    local function getrapidgun()
+        local char = Self.Character
+        if not char then return nil end
+        for _, tool in next, char:GetChildren() do
+            if tool:IsA("Tool") and tool:FindFirstChild("Ammo") then
+                return tool
+            end
+        end
+        return nil
+    end
+
+    local function patchtool(tool)
         pcall(function()
-            for _, Conn in pairs(getconnections(Tool.Activated)) do
-                local Info = debug.getinfo(Conn.Function)
-                for i = 1, Info.nups do
-                    local Val = debug.getupvalue(Conn.Function, i)
-                    if type(Val) == "number" then
-                        debug.setupvalue(Conn.Function, i, 0)
+            if not shared.azov["delay changer"]["enabled"] then return end
+            local DelayCfg = shared.azov["delay changer"]
+            
+            local Cooldown = 0.3
+            local CD = tool:FindFirstChild("ShootingCooldown")
+            if CD then Cooldown = CD.Value end
+
+            local WeaponDelay = DelayCfg["delay"]
+            local WeaponCfg = DelayCfg["weapon configs"]
+            if WeaponCfg and WeaponCfg["enabled"] then
+                local name = tool.Name:lower()
+                if name:find("shotgun") or name:find("barrel") then
+                    WeaponDelay = WeaponCfg["shotguns"]["delay"] or WeaponDelay
+                elseif name:find("revolver") or name:find("pistol") or name:find("glock") then
+                    WeaponDelay = WeaponCfg["pistols"]["delay"] or WeaponDelay
+                else
+                    WeaponDelay = WeaponCfg["others"]["delay"] or WeaponDelay
+                end
+            end
+            Cooldown = WeaponDelay or Cooldown
+
+            for _, conn in pairs(getconnections(tool.Activated)) do
+                local info = debug.getinfo(conn.Function)
+                for i = 1, info.nups do
+                    local val = debug.getupvalue(conn.Function, i)
+                    if type(val) == "number" then
+                        debug.setupvalue(conn.Function, i, Cooldown)
                     end
                 end
             end
+            if CD then CD.Value = Cooldown end
         end)
     end
 
     local function OnCharRapidFire(Char)
         IsFiringRapid = false
+
+        for _, Tool in next, Char:GetChildren() do
+            if Tool:IsA("Tool") then
+                patchtool(Tool)
+            end
+        end
+
         Char.ChildAdded:Connect(function(Tool)
-            if Tool:IsA("Tool") and shared.azov["delay changer"]["enabled"] then
-                PatchTool(Tool)
+            if Tool:IsA("Tool") then
+                patchtool(Tool)
             end
         end)
     end
-
-    local function GetDelayChangerDelay(GunName)
-        local cfg = shared.azov["delay changer"]
-        local wcfg = cfg["weapon configs"]
-        if wcfg and wcfg["enabled"] then
-            if table.find(WeaponInfo and WeaponInfo.Shotguns or {}, GunName) then
-                return (wcfg["shotguns"] and wcfg["shotguns"]["delay"]) or cfg["delay"]
-            elseif table.find(WeaponInfo and WeaponInfo.Pistols or {}, GunName) then
-                return (wcfg["pistols"] and wcfg["pistols"]["delay"]) or cfg["delay"]
-            else
-                return (wcfg["others"] and wcfg["others"]["delay"]) or cfg["delay"]
-            end
-        end
-        return cfg["delay"]
-    end
-
 
     do
         local cfg = shared.azov["avatar changer"]
@@ -713,31 +1154,6 @@ end)
             log("assets calculated")
         end
 
-        local function spoofRobloxGuiInspect(root)
-            if not cfg or not cfg["spoof roblox gui"] then return end
-            if not root then return end
-            if not spoofedName or not spoofedDisplayName then return end
-            for _, desc in ipairs(root:GetDescendants()) do
-                if desc:IsA("GuiObject") then
-                    local nameLower = string.lower(desc.Name)
-                    if string.find(nameLower, "inspect", 1, true) or string.find(nameLower, "avatar", 1, true) then
-                        pcall(function()
-                            for _, inner in ipairs(desc:GetDescendants()) do
-                                if inner:IsA("TextLabel") or inner:IsA("TextButton") or inner:IsA("TextBox") then
-                                    local lowerText = string.lower(tostring(inner.Text or ""))
-                                    if lowerText == string.lower(ACTUAL_REAL_NAME) or lowerText == string.lower(ACTUAL_REAL_DISPLAY_NAME) then
-                                        inner.Text = spoofedDisplayName
-                                    elseif lowerText == "@" .. string.lower(ACTUAL_REAL_NAME) then
-                                        inner.Text = "@" .. spoofedName
-                                    end
-                                end
-                            end
-                        end)
-                    end
-                end
-            end
-        end
-
         local function resolveUserIdFromConfigTarget()
             if not cfg then return nil, "missing config" end
             local mode = string.lower(tostring(cfg["mode"] or "username"))
@@ -749,7 +1165,7 @@ end)
             end
             if mode == "username" then
                 local trimmed = string.gsub(target, "^%s*(.-)%s*$", "%1")
-                if trimmed == "" then return nil, "empty username" end
+                if trimmed == "" or trimmed == "username" then return nil, "empty username" end
                 if usernameCache[trimmed] then return usernameCache[trimmed], nil end
                 local ok, userId = pcall(function() return Players:GetUserIdFromNameAsync(trimmed) end)
                 if not ok or not userId then return nil, "not found" end
@@ -764,17 +1180,26 @@ end)
 
         local function getConfigHash()
             if not cfg then return "" end
-            local h = tostring(cfg["enabled"]) .. tostring(cfg["mode"]) .. tostring(cfg["target"]) .. tostring(cfg["skinny"]) .. tostring(cfg["add aditional items"])
+            local h = tostring(cfg["enabled"]) .. tostring(cfg["mode"]) .. tostring(cfg["target"]) .. tostring(cfg["skinny"]) .. tostring(cfg["override animation"])
             if cfg["additional items"] then
-                h = h .. tostring(cfg["additional items"].headless) .. tostring(cfg["additional items"].korblox)
+                h = h .. tostring(cfg["additional items"].headless)
                 if cfg["additional items"].accessories then
                     for _, id in ipairs(cfg["additional items"].accessories) do
                         h = h .. tostring(id)
                     end
                 end
             end
-            h = h .. tostring(cfg["target displayname"]) .. tostring(cfg["reapply on spawn"]) .. tostring(cfg["spoof roblox gui"])
+            h = h .. tostring(cfg["target displayname"]) .. tostring(cfg["reapply on spawn"])
             return h
+        end
+
+        local function applySkinnyScales(description)
+            description.HeightScale = 1
+            description.WidthScale = 0.5
+            description.DepthScale = 0.5
+            description.HeadScale = 1
+            description.ProportionScale = 0
+            description.BodyTypeScale = 0
         end
 
         local function applyDescription(description, targetUserId)
@@ -785,58 +1210,8 @@ end)
             local currentTool = char:FindFirstChildOfClass("Tool")
             local isR15 = hum.RigType == Enum.HumanoidRigType.R15
 
-            if isR15 and cfg and cfg["skinny"] then
-                description.HeightScale = 1
-                description.WidthScale = 0.5
-                description.DepthScale = 0.5
-                description.HeadScale = 1
-                description.ProportionScale = 0
-                description.BodyTypeScale = 0
-            end
-
-            if cfg and cfg["add aditional items"] and cfg["additional items"] then
-                local add = cfg["additional items"]
-                if add.headless then
-                    description.Head = 134082579
-                end
-                if add.korblox then
-                    description.RightLeg = 139607737
-                end
-                if add.accessories and #add.accessories > 0 then
-                    local ids = {}
-                    for _, id in ipairs(add.accessories) do
-                        table.insert(ids, tostring(id))
-                    end
-                    pcall(function()
-                        for _, id in ipairs(add.accessories) do
-                            local nid = tonumber(id)
-                            if not nid then continue end
-                            local info = getAssetInfo(nid)
-                            if info then
-                                local typeId = tonumber(info.AssetTypeId)
-                                if typeId == 17 then
-                                    description.Head = nid
-                                elseif typeId == 27 then
-                                    description.Torso = nid
-                                elseif typeId == 28 then
-                                    description.RightArm = nid
-                                elseif typeId == 29 then
-                                    description.LeftArm = nid
-                                elseif typeId == 30 then
-                                    description.LeftLeg = nid
-                                elseif typeId == 31 then
-                                    description.RightLeg = nid
-                                end
-                            end
-                        end
-                    end)
-                    local currentAcc = description.HatAccessory
-                    if currentAcc == "" then
-                        description.HatAccessory = table.concat(ids, ",")
-                    else
-                        description.HatAccessory = currentAcc .. "," .. table.concat(ids, ",")
-                    end
-                end
+            if isR15 and cfg and (cfg["skinny"] or cfg["skinny only"]) then
+                applySkinnyScales(description)
             end
 
             if targetUserId then
@@ -910,7 +1285,6 @@ end)
                         spoofedUserId = targetUserId
                         pcall(function() hum.DisplayName = spoofedDisplayName end)
                         pcall(function() Self.DisplayName = spoofedDisplayName end)
-                        spoofRobloxGuiInspect(CoreGui)
                     end
                 end)
             end
@@ -918,9 +1292,12 @@ end)
             pcall(function()
                 local function clear(parent)
                     for _, v in ipairs(parent:GetChildren()) do
+                        if v:IsA("Tool") or v:FindFirstAncestorOfClass("Tool") then 
+                            continue 
+                        end
                         if v:IsA("Accessory") or v:IsA("Shirt") or v:IsA("Pants") or v:IsA("ShirtGraphic") or v:IsA("BodyColors") then
                             v:Destroy()
-                        elseif not v:IsA("BasePart") and not v:IsA("Humanoid") and not v:IsA("Tool") then
+                        elseif not v:IsA("BasePart") and not v:IsA("Humanoid") then
                             clear(v)
                         end
                     end
@@ -947,13 +1324,21 @@ end)
 
             if not ok then
                 local errText = tostring(err)
-                if string.find(string.lower(errText), "backend server", 1, true) then backendLocked = true end
+
+                if string.find(string.lower(errText), "backend server", 1, true) and not string.find(string.lower(errText), "throt", 1, true) then 
+                    backendLocked = true 
+                end
                 return false, errText
             end
 
             if currentTool then
-                task.delay(0.1, function()
-                    if currentTool.Parent == Self.Backpack then
+                task.spawn(function()
+                    task.wait(0.15)
+                    if currentTool and currentTool.Parent == Self.Backpack then
+                        pcall(function() hum:EquipTool(currentTool) end)
+                    end
+                    task.wait(0.2)
+                    if currentTool and currentTool.Parent == Self.Backpack then
                         pcall(function() hum:EquipTool(currentTool) end)
                     end
                 end)
@@ -1001,7 +1386,7 @@ end)
                         local found = false
                         for _, mesh in pairs(char:GetChildren()) do
                             if mesh:IsA("CharacterMesh") and mesh.BodyPart == bodyPartEnum then
-                                mesh.MeshId = assetId
+                                mesh.MeshId = "rbxassetid://" .. tostring(assetId)
                                 found = true
                                 break
                             end
@@ -1009,7 +1394,7 @@ end)
                         if not found then
                             local nm = Instance.new("CharacterMesh")
                             nm.BodyPart = bodyPartEnum
-                            nm.MeshId = assetId
+                            nm.MeshId = "rbxassetid://" .. tostring(assetId)
                             nm.Parent = char
                         end
                     else
@@ -1049,6 +1434,19 @@ end)
             local mode = string.lower(tostring(cfg["mode"] or "username"))
             local userId, resolveErr = resolveUserIdFromConfigTarget()
 
+            if cfg["skinny only"] then
+                local hum = getHumanoid()
+                if hum then
+                    local desc = hum:GetAppliedDescription()
+                    if desc then
+                        applySkinnyScales(desc)
+                        pcall(function() hum:ApplyDescription(desc) end)
+                    end
+                end
+                lastConfigHash = currentHash
+                return true
+            end
+
             if not force and currentHash == lastConfigHash and userId == lastAppliedUserId then
                 return true
             end
@@ -1080,6 +1478,17 @@ end)
             if character == lastCharacter then return end
             lastCharacter = character
             
+            character.ChildAdded:Connect(function(tool)
+                if tool:IsA("Tool") and shared.azov["delay changer"]["enabled"] then
+                    patchtool(tool)
+                end
+            end)
+            for _, tool in ipairs(character:GetChildren()) do
+                if tool:IsA("Tool") and shared.azov["delay changer"]["enabled"] then
+                    patchtool(tool)
+                end
+            end
+            
             if cfg and cfg["enabled"] and cfg["reapply on spawn"] then
                 task.spawn(function()
                     local hum = character:WaitForChild("Humanoid", 10)
@@ -1102,15 +1511,71 @@ end)
         end)
     end
 
+    do
+        local AnimationChanger = shared.azov["animation changer"]
+        local MasterBundles = { 
+            Ninja = { walk = "rbxassetid://656121766", run = "rbxassetid://656118852", jump = "rbxassetid://656117878", fall = "rbxassetid://10921159222" }, 
+            Robot = { walk = "rbxassetid://616095330", run = "rbxassetid://616091570", jump = "rbxassetid://616090535", fall = "rbxassetid://616092998" }, 
+            Stylish = { walk = "rbxassetid://616146177", run = "rbxassetid://616140816", jump = "rbxassetid://616139451", fall = "rbxassetid://616134815" }, 
+            Catwalk = { walk = "rbxassetid://109168724482748", run = "rbxassetid://81024476153754", jump = "rbxassetid://116936326516985", fall = "rbxassetid://119377220967554" }, 
+            Zombie = { walk = "rbxassetid://616168032", run = "rbxassetid://616163682", jump = "rbxassetid://616161997", fall = "rbxassetid://616157476" }, 
+            Oldschool = { walk = "rbxassetid://10921244891", run = "rbxassetid://10921240218", jump = "rbxassetid://10921242013", fall = "rbxassetid://10921241244" }, 
+            Mage = { walk = "rbxassetid://707897309", run = "rbxassetid://707861613", jump = "rbxassetid://707853694", fall = "rbxassetid://707829716" }, 
+            Hero = { walk = "rbxassetid://616122287", run = "rbxassetid://616117076", jump = "rbxassetid://616115533", fall = "rbxassetid://616108001" }, 
+            Default = { walk = "rbxassetid://10921269718", run = "rbxassetid://10921261968", jump = "rbxassetid://10921263860", fall = "rbxassetid://10921262864" }, 
+            Werewolf = { walk = "rbxassetid://1083178339", run = "rbxassetid://1083216690", jump = "rbxassetid://1083218792", fall = "rbxassetid://1083189019" }, 
+            Knight = { walk = "rbxassetid://657552124", run = "rbxassetid://657564596", jump = "rbxassetid://658409194", fall = "rbxassetid://657600338" }, 
+            Vampire = { walk = "rbxassetid://1083473930", run = "rbxassetid://1083462077", jump = "rbxassetid://1083455352", fall = "rbxassetid://1083443587" }, 
+        }
 
+        local function getAnim(style, animType) 
+            local bundle = MasterBundles[style] 
+            if not bundle then return MasterBundles.Default[animType] end 
+            return bundle[animType] 
+        end 
 
-    local GuiInsetOffsetY = game:GetService('GuiService'):GetGuiInset().Y
-    local CanTriggerbotShoot = true
+        local function applyAnims(char) 
+            local avatarCfg = shared.azov["avatar changer"]
+            
+            if not AnimationChanger["animations"]["enabled"] then return end 
+            
+            if avatarCfg and avatarCfg["enabled"] and not avatarCfg["override animation"] then 
+                return 
+            end
+            
+            local animate = char:FindFirstChild("Animate") 
+            if not animate then animate = char:WaitForChild("Animate", 5) end 
+            
+            if animate then 
+                if animate:FindFirstChild("run") and animate.run:FindFirstChild("RunAnim") then 
+                    animate.run.RunAnim.AnimationId = getAnim(AnimationChanger["animations"]["run"], "run") 
+                end 
+                if animate:FindFirstChild("walk") and animate.walk:FindFirstChild("WalkAnim") then 
+                    animate.walk.WalkAnim.AnimationId = getAnim(AnimationChanger["animations"]["walk"], "walk") 
+                end 
+                if animate:FindFirstChild("jump") and animate.jump:FindFirstChild("JumpAnim") then 
+                    animate.jump.JumpAnim.AnimationId = getAnim(AnimationChanger["animations"]["jump"], "jump") 
+                end 
+                if animate:FindFirstChild("fall") and animate.fall:FindFirstChild("FallAnim") then 
+                    animate.fall.FallAnim.AnimationId = getAnim(AnimationChanger["animations"]["fall"], "fall") 
+                end 
+                
+                animate.Disabled = true 
+                task.wait() 
+                animate.Disabled = false 
+            end 
+        end 
+
+        if Self.Character then applyAnims(Self.Character) end 
+        Self.CharacterAdded:Connect(function(char) task.wait(0.5) applyAnims(char) end)
+    end
+
     local Script = {
         RBXConnections = {},
         Locals = {},
         Visuals = {}
     }
+
     local WeaponMap = {}
     local Velocity_Data = {
         Tick = tick(),
@@ -1162,7 +1627,7 @@ end)
             "GunScriptDisabled", "IsTriggerBotting", "TriggerbotTarget", "IsDoubleTapping", "SilentAimTarget",
             "AimAssistTarget", "IsWalkSpeeding", "IsJumping", "DoubleTapState", "CurrentWeapon",
             "IsBoxFocused", "TriggerState", "HitPosition", "HitTrigger", "MoveVector", "LastShot",
-            "IsAimed", "HitPart", "CodeRegion", "FieldOfViewOne", "FieldOfViewTwo", "IsOverriding"
+            "IsAimed", "HitPart", "CodeRegion", "FieldOfViewOne", "FieldOfViewTwo"
         }
 
         for _, v in ipairs(defaults) do Script.Locals[v] = nil end
@@ -1179,7 +1644,7 @@ end)
     end
     InitializeLocals()
 
-    getgenv().test = { -- this is just forcehit people just call it dmg overrider tho for some reason
+    getgenv().test = {
         dmg_override = {
             enabled = true,
             mode = 'full'
@@ -1209,7 +1674,6 @@ end)
                 local args = {...}
                 local HitPos, HitPart, HitNormal = OldShoot(unpack(args))
 
-                -- Determine which argument is the actual 'args' table
                 local realArgs = args[1]
                 if realArgs == GunHandler then realArgs = args[2] end
 
@@ -1222,7 +1686,7 @@ end)
                 local isAllowed = false
                 if tool and fhCfg and fhCfg["enabled"] then
                     if fhCfg["weapons"] then
-                        -- Check against config directly or by category
+
                         if fhCfg["weapons"]["revolver"] and (tool.Name == "[Revolver]" or tool.Name == "[Glock]" or tool.Name == "[Silencer]") then
                             isAllowed = true
                         elseif fhCfg["weapons"]["double-barrel shotgun"] and (tool.Name == "[Double-Barrel SG]" or tool.Name == "[TacticalShotgun]" or tool.Name == "[Shotgun]") then
@@ -1256,13 +1720,12 @@ end)
                 return HitPos, HitPart, HitNormal
             end)
         else
-            -- Fallback to direct assignment if hookfunction is not available
+
             local OriginalShoot = GunHandler.shoot
             GunHandler.shoot = function(...)
                 local args = {...}
                 local HitPos, HitPart, HitNormal = OriginalShoot(unpack(args))
 
-                -- Determine which argument is the actual 'args' table
                 local realArgs = args[1]
                 if realArgs == GunHandler then realArgs = args[2] end
 
@@ -1314,13 +1777,12 @@ end)
     end
     task.spawn(function()
         local ModulesFolder = ReplicatedStorage:FindFirstChild("Modules")
-        if not ModulesFolder then return end -- Games without 'Modules' folder are ignored
+        if not ModulesFolder then return end
 
         for i = 1, 120 do
             if TryInstallDamageHook() then break end
             task.wait(1)
             
-            -- If after 5 seconds the GunHandler still isn't found, stop trying
             if i > 5 and not ModulesFolder:FindFirstChild("GunHandler") then
                 break
             end
@@ -2015,7 +2477,7 @@ end)
     do
         SetRegion("Gun System")
         function Modules.DaHood()
-            if string.find(GameName, "Da Hood") then
+            if string.find(GameName, "Da Hood") or game.PlaceId == 88976059384565 then
                 local IsClient = RunService:IsClient()
                 local PlaceIDCheck = game.PlaceId == 88976059384565
                 local function CanShoot(Character)
@@ -2185,7 +2647,7 @@ end)
                 })
 
                 UserInputService.InputBegan:Connect(function(p51, p52)
-                    if not p52 or p51.UserInputType == Enum.UserInputType.Keyboard and p51.KeyCode == Enum.KeyCode.LeftShift or p51.UserInputType == Enum.UserInputType.Gamepad1 and p51.KeyCode == Enum.KeyCode.ButtonL2 then
+                    if not p52 then
                         if p51.UserInputType == Enum.UserInputType.Keyboard or p51.UserInputType == Enum.UserInputType.Gamepad1 then
                             v_u_14[p51.KeyCode.Name] = {
                                 ["Press"] = true,
@@ -2202,7 +2664,7 @@ end)
                     end
                 end)
                 UserInputService.InputEnded:Connect(function(p53, p54)
-                    if not p54 or p53.UserInputType == Enum.UserInputType.Keyboard and p53.KeyCode == Enum.KeyCode.LeftShift or p53.UserInputType == Enum.UserInputType.Gamepad1 and p53.KeyCode == Enum.KeyCode.ButtonL2 then
+                    if not p54 then
                         if p53.UserInputType == Enum.UserInputType.Keyboard or p53.UserInputType == Enum.UserInputType.Gamepad1 then
                             v_u_14[p53.KeyCode.Name] = {
                                 ["Press"] = false,
@@ -2348,7 +2810,7 @@ end)
                                     end
                                     if Instance then
                                         v_u_49 = Instance
-                                        -- Keep original v_u_50 (hit position) for visuals
+
                                     end
                                 end
                             end
@@ -2821,9 +3283,6 @@ end)
                 local HitPosition
 
                 local HitPart = Config["point"]
-                if Config["hitpart override"]["enabled"] and Script.Locals.IsOverriding then
-                    HitPart = Config["hitpart override"][1]
-                end
 
                 if HitPart == 'closest point' then
                     local NearestPoint
@@ -2857,7 +3316,39 @@ end)
                             return HitPosition + GetResolvedVelocity(RootPart) * Vector3.new(px, py, px)
                         end
                     else
-                        return Script:ApplyNormalPredictionFormula(Humanoid, HitPosition, Object.HumanoidRootPart.Velocity)
+                        local finalPos = Script:ApplyNormalPredictionFormula(Humanoid, HitPosition, Object.HumanoidRootPart.Velocity)
+                        
+                        local tool = Self.Character and Self.Character:FindFirstChildOfClass("Tool")
+                        local weaponName = tool and string.lower(tool.Name)
+                        
+                        local futureData = Config["future"]
+                        local futureCfg = futureData and futureData[weaponName] and futureData[weaponName]["future"]
+                        
+                        local FutureX, FutureY, FutureZ = 0, 0, 0
+                        if futureCfg and futureCfg["enabled"] then
+                            if futureCfg["lure"] then
+
+                                local root = Object:FindFirstChild("HumanoidRootPart")
+                                if root then
+                                    local velocity = root.AssemblyLinearVelocity
+                                    local mag = velocity.Magnitude
+                                    local lureScale = mag > 0 and (mag / 100) or 0
+                                    FutureX, FutureY, FutureZ = lureScale, lureScale, lureScale
+                                end
+                            else
+                                local s = futureCfg["settings"]
+                                FutureX, FutureY, FutureZ = s["x"] or 0, s["y"] or 0, s["z"] or 0
+                            end
+                        end
+                        
+                        if FutureX ~= 0 or FutureY ~= 0 or FutureZ ~= 0 then
+                            local root = Object:FindFirstChild("HumanoidRootPart")
+                            if root then
+                                finalPos = finalPos + (root.AssemblyLinearVelocity * Vector3.new(FutureX, FutureY, FutureZ))
+                            end
+                        end
+                        
+                        return finalPos
                     end
                 else
                     return HitPosition
@@ -2906,8 +3397,11 @@ end)
             local uiCfg  = shared.azov["globals"]["hotkey ui"] or {}
             local FONT   = uiCfg["font"] or Enum.Font.Arcade
             local SZ     = uiCfg["text size"] or 11
+            local AZOV_SZ = 16
+            local AZOV_COL = uiCfg["azov color"] or Color3.fromRGB(255, 255, 255)
             local ROW_H  = SZ + 4
-            local GAP    = uiCfg["gap"] or 1
+            local BRAND_H = AZOV_SZ + 4
+            local GAP    = 1
             local MAX_ROWS = 10
             local DEFAULT_COLOR = Color3.fromRGB(255, 255, 255)
 
@@ -2927,7 +3421,7 @@ end)
                 BrandFrame.BackgroundTransparency = 1
                 BrandFrame.BorderSizePixel        = 0
                 BrandFrame.AnchorPoint            = Vector2.new(0.5, 0)
-                BrandFrame.Size                   = UDim2.new(0, 140, 0, ROW_H)
+                BrandFrame.Size                   = UDim2.new(0, 140, 0, BRAND_H)
                 BrandFrame.Parent                 = gui
 
                 LblAzov = Instance.new("TextLabel")
@@ -2937,8 +3431,8 @@ end)
                 LblAzov.AnchorPoint            = Vector2.new(1, 0.5)
                 LblAzov.Position               = UDim2.fromScale(0.5, 0.5)
                 LblAzov.Font                   = FONT
-                LblAzov.TextSize               = SZ
-                LblAzov.TextColor3             = Color3.fromRGB(255, 255, 255)
+                LblAzov.TextSize               = AZOV_SZ
+                LblAzov.TextColor3             = AZOV_COL
                 LblAzov.TextStrokeColor3       = Color3.fromRGB(0, 0, 0)
                 LblAzov.TextStrokeTransparency = 0
                 LblAzov.TextXAlignment         = Enum.TextXAlignment.Right
@@ -2962,8 +3456,8 @@ end)
                     l.AnchorPoint            = Vector2.new(0, 0.5)
                     l.Position               = UDim2.new(0, offsetX or 0, 0.5, offsetY or 0)
                     l.Font                   = FONT
-                    l.TextSize               = SZ + (extraSz or 0)
-                    l.TextColor3             = textColor or Color3.fromRGB(255, 255, 255)
+                    l.TextSize               = AZOV_SZ + (extraSz or 0)
+                    l.TextColor3             = textColor or AZOV_COL
                     l.TextTransparency       = textA or 0
                     l.TextStrokeColor3       = strokeColor or Color3.fromRGB(0, 0, 0)
                     l.TextStrokeTransparency = strokeA == nil and 1 or strokeA
@@ -2974,23 +3468,7 @@ end)
                     return l
                 end
 
-                local glowCol = Color3.fromRGB(255, 255, 255)
-                local function AddGlow(offset, trans)
-                    local offsets = {
-                        {offset, 0}, {-offset, 0}, {0, offset}, {0, -offset},
-                        {offset, offset}, {-offset, -offset}, {offset, -offset}, {-offset, offset}
-                    }
-                    for _, o in ipairs(offsets) do
-                        CcLabel(1, o[1], o[2], 0, glowCol, trans, glowCol, 1)
-                    end
-                end
-
-                AddGlow(1, 0.25)
-                AddGlow(2, 0.45)
-                AddGlow(3, 0.65)
-                AddGlow(4, 0.80)
-                AddGlow(5, 0.90)
-                CcLabel(5, 0, 0, 0, Color3.fromRGB(255, 255, 255), 0, Color3.fromRGB(0, 0, 0), 0)
+                CcLabel(5, 0, 0, 0, AZOV_COL, 0, Color3.fromRGB(0, 0, 0), 0)
 
                 Script.Locals.HudLines = {}
                 for i = 1, MAX_ROWS do
@@ -3070,7 +3548,6 @@ end)
 
             local lines = {}
 
-            -- Helper to detect armor across various Da Hood games/versions
             local function getArmor(char, player)
                 local be = char:FindFirstChild("BodyEffects")
                 if be then
@@ -3093,12 +3570,11 @@ end)
                 return 0
             end
 
-            -- Helper to add target statistics and distance
             local infoAdded = false
             local function addTargetInfo(target)
                 if infoAdded then return end
                 if target and target.Character and Self.Character then
-                    -- 1. Health / Armor
+
                     if uiCfg["show target health"] then
                         local hp, maxhp, armor = 0, 0, 0
                         local hum = target.Character:FindFirstChildOfClass("Humanoid")
@@ -3113,7 +3589,6 @@ end)
                         table.insert(lines, { text = healthStr .. "   " .. armorStr })
                     end
 
-                    -- 2. Target Distance
                     if uiCfg["show target distance"] then
                         local hrp = target.Character:FindFirstChild("HumanoidRootPart")
                         local myHRP = Self.Character:FindFirstChild("HumanoidRootPart")
@@ -3170,7 +3645,6 @@ end)
                 table.insert(lines, { text = "walk speed" })
             end
 
-
             local irCfgHud = shared.azov["rage"]["infinite range"]
             if irCfgHud and irCfgHud["enabled"] and Script.Locals.InfRangeActive then
                 table.insert(lines, { text = "inf range" })
@@ -3185,14 +3659,8 @@ end)
                 table.insert(lines, { text = "double tap" })
             end
 
-            if shared.azov["silentaim"]["hitpart override"]["enabled"] and Script.Locals.IsOverriding then
-                table.insert(lines, { text = "override" })
-            end
-
-
-
             local activeCount = #lines
-            local totalH = ROW_H + (activeCount > 0 and (GAP + activeCount * (ROW_H + GAP) - GAP) or 0)
+            local totalH = BRAND_H + (activeCount > 0 and (GAP + activeCount * (ROW_H + GAP) - GAP) or 0)
             local blockTop = (viewportSize.Y - 110) - totalH
 
             BrandFrame.Visible  = true
@@ -3202,7 +3670,7 @@ end)
                 Script.Locals.HudLines[i].container.Visible = false
             end
 
-            local rowTop = blockTop + ROW_H + GAP
+            local rowTop = blockTop + BRAND_H + GAP
             for idx, e in ipairs(lines) do
                 local row = Script.Locals.HudLines[idx]
                 row.container.Visible  = true
@@ -3396,7 +3864,7 @@ end)
                     end
                 end
             else
-                if string.find(GameName, "Da Hood") then
+                if string.find(GameName, "Da Hood") or game.PlaceId == 88976059384565 then
 
                     if shared.azov["checks"]["silent aim targeting"]["knife"] and Tool.Name == "[Knife]" then
                         ShootFunc(Gun, false)
@@ -3410,7 +3878,25 @@ end)
                     local Gun = Script:GetGunCategory()
                     local ToolHandle = Tool:WaitForChild("Handle")
                     local LocalCharacter = Self.Character or Self.CharacterAdded:Wait()
+                    
                     local Cooldown = Tool:WaitForChild("ShootingCooldown").Value
+                    local DelayCfg = shared.azov["delay changer"]
+                    if DelayCfg and DelayCfg["enabled"] then
+                        local WeaponCfg = DelayCfg["weapon configs"]
+                        if WeaponCfg and WeaponCfg["enabled"] then
+                            local gunType = Script:GetGunCategory()
+                            if gunType == "Shotgun" then
+                                Cooldown = WeaponCfg["shotguns"]["delay"] or Cooldown
+                            elseif gunType == "Pistol" then
+                                Cooldown = WeaponCfg["pistols"]["delay"] or Cooldown
+                            else
+                                Cooldown = WeaponCfg["others"]["delay"] or Cooldown
+                            end
+                        else
+                            Cooldown = DelayCfg["delay"] or Cooldown
+                        end
+                    end
+                    
                     local NoClueWhatThisIs = game.PlaceId == 88976059384565 and {
                         ["value"] = 5
                     } or Tool.Ammo
@@ -3436,7 +3922,7 @@ end)
                             if Check and (NoClueWhatThisIs.Value >= 1 and (not _G.GUN_COMBAT_TOGGLE and DaHood.CanShoot(Self.Character))) then
                                 Ticks[Tool.Name] = tick()
                                 ToolEvent:FireServer("Shoot")
-                                -- DoubleTap: fire an extra shot for shotguns
+
                                 if DoubleTap then
                                     local ForcedOriginDT = Tool:FindFirstChild("Default") and (Tool.Default:FindFirstChild("Mesh") and Tool.Default.Mesh:FindFirstChild("Muzzle")) or { ["WorldPosition"] = (ToolHandle.CFrame * WeaponOffset).Position }
                                     local WeaponRangeDT = Tool:WaitForChild("Range")
@@ -3734,150 +4220,148 @@ end)
 
         function Script:Triggerbot()
             local triggerBotConfig = shared.azov["triggerbot"]
-            local locals = Script.Locals
-            local target = locals.TriggerbotTarget and locals.TriggerbotTarget.Character
-            local TriggerBotConfig = shared.azov["triggerbot"]
+            if not triggerBotConfig["enabled"] then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
 
-            TriggerPart.Size = Vector3.new(shared.azov["triggerbot"]["fov"]["x"], shared.azov["triggerbot"]["fov"]["y"], shared.azov["triggerbot"]["fov"]["z"])
+            local locals = Script.Locals
+            if not locals.TriggerState then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
+
+            local selfCharacter = Self.Character
+            if not selfCharacter then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
+
+            local tool = selfCharacter:FindFirstChildOfClass("Tool")
+            if not tool or not tool:FindFirstChild("Ammo") then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
+
+            if shared.azov["checks"]["triggerbot targeting"]["knife"] and tool.Name == "[Knife]" then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
+
+            local target = locals.TriggerbotTarget
+            if not target or not target.Character then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
+
+            local targetCharacter = target.Character
+            local targetHRP = targetCharacter:FindFirstChild("HumanoidRootPart")
+            if not targetHRP then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
+
+            TriggerPart.Size = Vector3.new(triggerBotConfig["fov"]["x"], triggerBotConfig["fov"]["y"], triggerBotConfig["fov"]["z"])
             TriggerPart.Parent = workspace
             TriggerPart.Anchored = true
             TriggerPart.CanCollide = false
-            TriggerPart.Transparency = shared.azov["triggerbot"]["fov"]["visible"] and 0.7 or 1
+            TriggerPart.Transparency = triggerBotConfig["fov"]["visible"] and 0.7 or 1
             TriggerPart.Color = Color3.new(1, 0, 0)
 
-            if target then
-                local selfCharacter = Self.Character
-                local tool = selfCharacter:FindFirstChildOfClass("Tool")
+            if shared.azov["checks"]["triggerbot targeting"]["forcefield"] and targetCharacter:FindFirstChild("Forcefield") then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
 
-                if not tool or not tool:FindFirstChild("Ammo") or tool.Name == "Knife" then
+            if shared.azov["checks"]["visible"] then
+                local vPart = targetCharacter:FindFirstChild("HumanoidRootPart") or targetCharacter:FindFirstChild("Head") or TriggerPart
+                if not Script:RayCast(vPart, Script:GetOrigin('Camera'), {selfCharacter, TriggerPart, SilentAimPart}) then
                     TriggerPart.Position = Vector3.zero
                     return
                 end
-                if shared.azov["checks"]["triggerbot targeting"]["knife"] and tool.Name == "[Knife]" then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
+            end
 
-                if not (triggerBotConfig["enabled"] and locals.TriggerState and target) then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
+            if shared.azov["checks"]["knocked"] and CurrentGame.Functions.IsKnocked(targetCharacter) then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
 
-                if not CanTriggerbotShoot then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
+            if shared.azov["checks"]["player knocked"] and CurrentGame.Functions.IsKnocked(selfCharacter) then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
 
-                local Player = locals.TriggerbotTarget
-                local Character = locals.TriggerbotTarget.Character
-                if shared.azov["checks"]["triggerbot targeting"]["forcefield"] and Character:FindFirstChild("Forcefield") then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
+            if shared.azov["checks"]["chat"] and UserInputService:GetFocusedTextBox() then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
 
-                if shared.azov["checks"]["visible"] then
-                    local vPart = Character:FindFirstChild("HumanoidRootPart") or Character:FindFirstChild("Head") or TriggerPart
-                    if not Script:RayCast(vPart, Script:GetOrigin('Camera'), {Self.Character, TriggerPart, SilentAimPart}) then
-                        TriggerPart.Position = Vector3.zero
-                        return
-                    end
-                end
+            local targetDistance = (selfCharacter.HumanoidRootPart.Position - targetHRP.Position).Magnitude
+            if targetDistance > 200 then
+                TriggerPart.Position = Vector3.zero
+                return
+            end
 
-                if shared.azov["checks"]["knocked"] and CurrentGame.Functions.IsKnocked(Player.Character) then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
+            local triggerFov = triggerBotConfig["fov"] or {}
+            local fovEnabled = triggerFov["enabled"]
+            local fovType = triggerFov["type"] or "box"
+            local canFire = false
 
-                if shared.azov["checks"]["player knocked"] and CurrentGame.Functions.IsKnocked(Self.Character) then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
+            if fovEnabled then
+                if fovType == "box" then
+                    local velocity = GetResolvedVelocity(targetHRP)
+                    local prediction = triggerBotConfig["prediction"]
 
-                if shared.azov["checks"]["grabbed"] and CurrentGame.Functions.IsGrabbed(Player) then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
-
-                if shared.azov["checks"]["chat"] and UserInputService:GetFocusedTextBox() then
-                    TriggerPart.Position = Vector3.zero
-                    return
-                end
-
-                local targetDistance = (selfCharacter.HumanoidRootPart.Position - target.HumanoidRootPart.Position).Magnitude
-                if targetDistance > 200 then TriggerPart.Position = Vector3.zero return end
-
-                if triggerBotConfig["limit gun range"] then
-                    local tbTool = selfCharacter:FindFirstChildWhichIsA("Tool")
-                    local tbRange = tbTool and tbTool:FindFirstChild("Range")
-                    if tbRange and targetDistance > tbRange.Value then
-                        TriggerPart.Position = Vector3.zero
-                        return
-                    end
-                end
-
-                local triggerFov = triggerBotConfig["fov"] or {}
-                local fovEnabled = triggerFov["enabled"]
-                local fovType = triggerFov["type"] or "box"
-                local canFire = false
-
-                if fovEnabled then
-                    if fovType == "box" then
-                        local velocity = GetResolvedVelocity(target.HumanoidRootPart)
-                        local prediction = triggerBotConfig["prediction"]
-
-                        if prediction["enabled"] then
-                            local px, py, pz = prediction["x"] or 0, prediction["y"] or 0, prediction["z"] or 0
-                            if prediction["manual"] then
-                                px, py, pz = prediction["manual"]["x"], prediction["manual"]["y"], prediction["manual"]["z"]
-                            end
-                            TriggerPart.Position = target.HumanoidRootPart.Position + Vector3.new(velocity.X * px, velocity.Y * py, velocity.Z * pz)
-                        else
-                            TriggerPart.Position = target.HumanoidRootPart.Position
+                    if prediction["enabled"] then
+                        local px, py, pz = prediction["x"] or 0, prediction["y"] or 0, prediction["z"] or 0
+                        if prediction["manual"] then
+                            px, py, pz = prediction["manual"]["x"], prediction["manual"]["y"], prediction["manual"]["z"]
                         end
+                        TriggerPart.Position = targetHRP.Position + Vector3.new(velocity.X * px, velocity.Y * py, velocity.Z * pz)
+                    else
+                        TriggerPart.Position = targetHRP.Position
+                    end
 
-                        local mouseLocation = GetAimPosition()
-                        local ray = Camera:ViewportPointToRay(mouseLocation.X, mouseLocation.Y)
-                        local result = raycast(ray.Origin, ray.Direction * 1000, raycastParams)
+                    local mouseLocation = GetAimPosition()
+                    local ray = Camera:ViewportPointToRay(mouseLocation.X, mouseLocation.Y)
+                    local result = raycast(ray.Origin, ray.Direction * 1000, raycastParams)
 
-                        if result and result.Instance == TriggerPart then
-                            canFire = true
-                            TriggerPart.Color = Color3.new(0, 1, 0)
-                        elseif triggerBotConfig["offscreen targeting"] then
-                            canFire = true
-                        else
-                            TriggerPart.Color = Color3.new(1, 0, 0)
-                        end
-                    elseif fovType == "circle" then
-                        TriggerPart.Position = Vector3.zero
-                        local mousePos = GetAimPosition()
-                        local screenPos, onScreen = Camera:WorldToViewportPoint(target.HumanoidRootPart.Position)
-                        if onScreen then
-                            local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(mousePos.X, mousePos.Y)).Magnitude
-                            if dist <= (triggerFov["circle"] or 20) then
-                                canFire = true
-                            end
-                        elseif triggerBotConfig["offscreen targeting"] then
+                    if result and result.Instance == TriggerPart then
+                        canFire = true
+                        TriggerPart.Color = Color3.new(0, 1, 0)
+                    elseif triggerBotConfig["offscreen targeting"] then
+                        canFire = true
+                    else
+                        TriggerPart.Color = Color3.new(1, 0, 0)
+                    end
+                elseif fovType == "circle" then
+                    TriggerPart.Position = Vector3.zero
+                    local mousePos = GetAimPosition()
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(targetHRP.Position)
+                    if onScreen then
+                        local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(mousePos.X, mousePos.Y)).Magnitude
+                        if dist <= (triggerFov["circle"] or 20) then
                             canFire = true
                         end
+                    elseif triggerBotConfig["offscreen targeting"] then
+                        canFire = true
                     end
-                else
-                    TriggerPart.Position = Vector3.zero
-                    canFire = true
-                end
-
-                if canFire and tool.Name ~= '[Knife]' then
-                    Script:TriggerShot(triggerBotConfig["delay"])
                 end
             else
                 TriggerPart.Position = Vector3.zero
+                canFire = true
+            end
+
+            if canFire and tool.Name ~= '[Knife]' then
+                Script:TriggerShot(triggerBotConfig["delay"])
             end
         end
 
         function Script:TriggerShot(interval)
             local locals = Script.Locals
-            local currentTime = DateTime.now().UnixTimestampMillis
-            if currentTime - locals.LastShot >= interval * 1000 then
-                locals.LastShot = currentTime
+            local now = tick()
+            if now - (locals.LastShot or 0) >= (interval or 0) then
+                locals.LastShot = now
                 ActivateTool()
             end
         end
@@ -3896,14 +4380,14 @@ end)
                 if speedCfg["enabled"] and speedActive then
                     Humanoid.WalkSpeed = speedCfg["value"]
                 elseif speedCfg["enabled"] then
-                    Humanoid.WalkSpeed = 16 -- Normal walkspeed fallback
+                    Humanoid.WalkSpeed = 16
                 end
 
                 if jumpCfg["enabled"] and jumpActive then
                     Humanoid.UseJumpPower = true
                     Humanoid.JumpPower = jumpCfg["value"]
                 elseif jumpCfg["enabled"] then
-                    Humanoid.JumpPower = 50 -- Normal jump power fallback
+                    Humanoid.JumpPower = 50
                 end
             end
             if shared.azov["movement"]["no tripping"] then
@@ -3968,7 +4452,6 @@ end)
             end
             if not target.Character then return end
 
-            -- kill switch: entirely disable aimbot if camlock targeting visible is off
             if shared.azov["checks"]["camlock targeting"]["visible"] == false then return end
 
             if shared.azov["checks"]["forcefield"] and target.Character:FindFirstChild("Forcefield") then return end
@@ -4040,9 +4523,6 @@ end)
     end
     do
  
- 
- 
- 
         local FieldOfViewSquare = Script.Visuals.new("Square")
         FieldOfViewSquare.Visible = shared.azov["silentaim"]["fov"]["visible"]
         FieldOfViewSquare.Color = Color3.fromRGB(255, 255, 255)
@@ -4065,7 +4545,6 @@ end)
         ExploitTracerLine.Visible   = false
         ExploitTracerLine.Thickness = 1
         ExploitTracerLine.Color     = Color3.fromRGB(255, 85, 85)
-
 
         local function GetBodySize(Character)
             local Part = Script:GetClosestPartToCursor(Character)
@@ -4292,11 +4771,9 @@ end)
         Self.CharacterAdded:Connect(OnLocalCharacterAdded)
 
         if Self.Character then
-            watchchar(Self.Character)
             OnCharRapidFire(Self.Character)
         end
         Self.CharacterAdded:Connect(function(Char)
-            watchchar(Char)
             OnCharRapidFire(Char)
         end)
 
@@ -4304,12 +4781,12 @@ end)
         for i = 1, #backpacktools do
             local v = backpacktools[i]
             if v:IsA("Tool") then
-                setuptool(v)
+                -- logic moved to ProcessTool
             end
         end
         Self.Backpack.ChildAdded:Connect(function(v)
             if v:IsA("Tool") then
-                setuptool(v)
+                -- logic moved to ProcessTool
             end
         end)
         local WeaponConfigs = shared.azov["silentaim"]["fov"]["weapon configs"]
@@ -4337,7 +4814,6 @@ end)
                 CurrentFOVY = shared.azov["silentaim"]["fov"]["box"][2]
             end
 
-            -- ESP Update
             do
                 local espCfg = shared.azov["esp"]
                 if espCfg then
@@ -4351,7 +4827,6 @@ end)
                         if player ~= Self then
                             local uid = player.UserId
 
-                            -- Create GUI if missing
                             if not Script.Locals.EspLabels[uid] then
                                 local bbg = Instance.new("BillboardGui")
                                 bbg.Name = "AzovESP_" .. uid
@@ -4397,7 +4872,6 @@ end)
                         end
                     end
 
-                    -- Cleanup labels for players who left
                     for uid, data in pairs(Script.Locals.EspLabels) do
                         if not Players:GetPlayerByUserId(uid) then
                             if data and data.gui then
@@ -4495,12 +4969,11 @@ end)
                 TargetTracerLine.Visible = false
             end
 
-
         end
 
         ThreadLoop(0, function()
 
-            if string.find(GameName, "Da Hood") then
+            if string.find(GameName, "Da Hood") or game.PlaceId == 88976059384565 then
                 local GunType = Script:GetGunCategory()
                 local Tool = Self.Character:FindFirstChildWhichIsA("Tool")
                 if Tool then
@@ -4544,24 +5017,6 @@ end)
         local ForcehitToggle = false
         RBXConnection(UserInputService.InputBegan, function(Input, Processed)
 
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                if shared.azov["delay changer"]["enabled"] and shared.azov["delay changer"]["rapid fire"] then
-                    if not Script.Locals.RapidFiringLoop then
-                        Script.Locals.RapidFiringLoop = true
-                        task.spawn(function()
-                            local rapidDelay = shared.azov["delay changer"]["rapid fire delay"] or 0
-                            while Script.Locals.RapidFiringLoop do
-                                local Char = Self and Self.Character
-                                local Gun = Char and Char:FindFirstChildOfClass("Tool")
-                                if Gun and Gun.Name ~= "[Knife]" then
-                                    pcall(function() Gun:Activate() end)
-                                end
-                                task.wait(rapidDelay)
-                            end
-                        end)
-                    end
-                end
-            end
             if shared.azov["checks"]["silent aim targeting"]["chat"] and UserInputService:GetFocusedTextBox() then return end
             local AimAssist = Enum.KeyCode[shared.azov["aimbot"]["key"]:upper()]
             local WalkSpeed = Enum.KeyCode[shared.azov["movement"]["speed"]["key"]:upper()]
@@ -4569,22 +5024,13 @@ end)
             local TriggerBotTarget = Enum.KeyCode[shared.azov["triggerbot"]["target key"]:upper()]
             local SilentAimTarget = Enum.KeyCode[shared.azov["silentaim"]["target key"]:upper()]
             local SilentAim = Enum.KeyCode[shared.azov["silentaim"]["key"]:upper()]
-            local HitPartOverride = Enum.KeyCode[shared.azov["silentaim"]["hitpart override"]["key"]:upper()]
+            
             if Input.KeyCode == SilentAim then
                 local saMode = shared.azov["silentaim"]["key mode"] or 'toggle'
                 if saMode == 'toggle' then
                     IsSilentAiming = not IsSilentAiming
                 elseif saMode == 'hold' then
                     IsSilentAiming = true
-                end
-            end
-
-            if Input.KeyCode == HitPartOverride then
-                local hpoMode = shared.azov["silentaim"]["hitpart override"]["mode"] or 'toggle'
-                if hpoMode == 'toggle' then
-                    Script.Locals.IsOverriding = not Script.Locals.IsOverriding
-                elseif hpoMode == 'hold' then
-                    Script.Locals.IsOverriding = true
                 end
             end
 
@@ -4621,7 +5067,7 @@ end)
                 if aimMode == 'toggle' then
                     AimToggle = not AimToggle
                     if AimToggle then
-                        -- If silent aim already has a target, aimbot uses that same person
+
                         if Script.Locals.SilentAimTarget then
                             Script.Locals.AimAssistTarget = Script.Locals.SilentAimTarget
                         else
@@ -4634,7 +5080,7 @@ end)
                         Script.Locals.AimAssistTarget = nil
                     end
                 elseif aimMode == 'hold' then
-                    -- If silent aim already has a target, aimbot uses that same person
+
                     if Script.Locals.SilentAimTarget then
                         Script.Locals.AimAssistTarget = Script.Locals.SilentAimTarget
                     else
@@ -4682,7 +5128,7 @@ end)
                 elseif triggerConfig["mode"] == "hold" then
                     Script.Locals.TriggerState = true
                 end
-            elseif isKeyboardInput and success and table.find(Enum.KeyCode:GetEnumItems(), keyCode) and Input.KeyCode == keyCode then
+            elseif isKeyboardInput and success and Input.KeyCode == keyCode then
                 if triggerConfig["mode"] == "toggle" then
                     Script.Locals.TriggerState = not Script.Locals.TriggerState
                 elseif triggerConfig["mode"] == "hold" then
@@ -4694,7 +5140,6 @@ end)
                 CanTriggerbotShoot = false
             end
 
-
             local irCfg = shared.azov["rage"]["infinite range"]
             if irCfg and irCfg["key"] then
                 local okIR, irKeyCode = pcall(function() return Enum.KeyCode[irCfg["key"]:upper()] end)
@@ -4703,7 +5148,6 @@ end)
                 end
             end
 
-            -- ESP toggle
             local espCfgHK = shared.azov["esp"]
             if espCfgHK then
                 local okESP, espKeyCode = pcall(function() return Enum.KeyCode[espCfgHK["key"]:upper()] end)
@@ -4761,11 +5205,15 @@ end)
         end)
 
         RBXConnection(UserInputService.InputEnded, function(Input, Processed)
+            if not (string.find(GameName, "Da Hood") or game.PlaceId == 88976059384565) then
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isfiring = false
+                end
+            end
 
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 Script.Locals.RapidFiringLoop = false
             end
-
 
             if shared.azov["checks"]["silent aim targeting"]["chat"] and UserInputService:GetFocusedTextBox() then return end
             local jumpCfg2 = shared.azov["movement"]["jump"]
@@ -4787,7 +5235,7 @@ end)
 
                 if isMouseInput and table.find({"MouseButton1", "MouseButton2"}, toggleKey) and Input.UserInputType == Enum.UserInputType[toggleKey] then
                     Script.Locals.TriggerState = false
-                elseif isKeyboardInput and success and table.find(Enum.KeyCode:GetEnumItems(), keyCode) and Input.KeyCode == keyCode then
+                elseif isKeyboardInput and success and Input.KeyCode == keyCode then
                     Script.Locals.TriggerState = false
                 end
             end
@@ -4807,8 +5255,6 @@ end)
                 CanTriggerbotShoot = true
             end
 
-
-
             if (shared.azov["silentaim"]["key mode"] or 'toggle') == 'hold' then
                 if Input.KeyCode == Enum.KeyCode[shared.azov["silentaim"]["key"]:upper()] then
                     IsSilentAiming = false
@@ -4823,11 +5269,6 @@ end)
             if (shared.azov["rage"]["doubletap"]["mode"] or 'toggle') == 'hold' then
                 if Input.KeyCode == Enum.KeyCode[shared.azov["rage"]["doubletap"]["key"]:upper()] then
                     Script.Locals.IsDoubleTapping = false
-                end
-            end
-            if (shared.azov["silentaim"]["hitpart override"]["mode"] or 'toggle') == 'hold' then
-                if Input.KeyCode == Enum.KeyCode[shared.azov["silentaim"]["hitpart override"]["key"]:upper()] then
-                    Script.Locals.IsOverriding = false
                 end
             end
         end)
@@ -4858,8 +5299,6 @@ end)
                 )
             end
 
-
-
             if Script.Locals.SilentAimTarget and Script.Locals.SilentAimTarget.Character then
                 Script.Locals.HitPosition = Script:GetHitPosition('Silent')
             end
@@ -4868,12 +5307,11 @@ end)
                 Script.Locals.HitTrigger = Script:GetClosestPartToCursor(Script.Locals.TriggerbotTarget.Character)
             end
 
-            ThreadFunction(function() Script:AimbotStep() end)
-            ThreadFunction(function() Script:Triggerbot() end)
-            ThreadFunction(function() Script:Physics() end)
+            Script:AimbotStep()
+            Script:Triggerbot()
+            Script:Physics()
             UpdateDrawings()
             task.spawn(AutomatedPrediction)
-
 
             local irCfg = shared.azov["rage"]["infinite range"]
             if irCfg and irCfg["enabled"] and Script.Locals.InfRangeActive then
