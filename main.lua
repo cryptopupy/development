@@ -152,7 +152,13 @@ end)
     local Self = Players.LocalPlayer
     local Mouse = Self:GetMouse()
     local Camera = workspace.CurrentCamera
-    local MainEvent = ReplicatedStorage:WaitForChild("MainEvent")
+    local MainEvent = ReplicatedStorage:WaitForChild("MainEvent", 5)
+
+    local function SafeFireMain(...)
+        if MainEvent then
+            MainEvent:FireServer(...)
+        end
+    end
 
     -- Das Hood Infinite Range Version
     local oldNamecall
@@ -1931,11 +1937,11 @@ end)
     local Games = {
         ['Da Hood'] = { HoodGame = true, Functions = GameFunctions() },
         ['Dee Hood'] = { HoodGame = true, Updater = "", Functions = GameFunctions(),
-                          RemotePath = function() return game.ReplicatedStorage.MainEvent end },
+                          RemotePath = function() return MainEvent end },
         ['Zee Hood'] = { HoodGame = true, Updater = "XEEHOODMOUSEPOSx3^3", Functions = GameFunctions(),
-                          RemotePath = function() return game.ReplicatedStorage.MainRemotes.MainRemoteEvent end },
+                          RemotePath = function() return game.ReplicatedStorage:FindFirstChild("MainRemotes") and game.ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent") end },
         ['Das Hood'] = { HoodGame = true, Updater = "UpdateMousePos", Functions = GameFunctions(),
-                          RemotePath = function() return game.ReplicatedStorage.MainEvent.MainRemoteEvent end },
+                          RemotePath = function() return MainEvent and MainEvent:FindFirstChild("MainRemoteEvent") end },
         ['a literal baseplate.'] = { HoodGame = false, Functions = GameFunctions() },
         ['Universal'] = { HoodGame = false, Functions = GameFunctions() }
         
@@ -2841,7 +2847,7 @@ end)
                         end
                     end
 
-                    local v48 = { workspace:WaitForChild("Bush"), workspace:WaitForChild("Ignored"), TriggerPart, SilentAimPart }
+                    local v48 = { workspace:WaitForChild("Bush", 2), workspace:WaitForChild("Ignored", 2), TriggerPart, SilentAimPart }
                     set_list(v47, 1, {v35, table.unpack(v48)})
 
                     v46.FilterDescendantsInstances = v47
@@ -3960,7 +3966,10 @@ end)
                             [2] = Script.Locals.HitPosition
                         }
 
-                        CurrentGame.RemotePath():FireServer(table.unpack(Arguments))
+                        local remote = CurrentGame.RemotePath()
+                        if remote then
+                            remote:FireServer(table.unpack(Arguments))
+                        end
                     else
                         SilentAimPart.Position = Vector3.zero
                     end
@@ -3978,10 +3987,11 @@ end)
 
                     local WeaponOffset = WeaponInfo.Offsets[Tool.Name]
                     local Gun = Script:GetGunCategory()
-                    local ToolHandle = Tool:WaitForChild("Handle")
+                    local ToolHandle = Tool:WaitForChild("Handle", 2)
                     local LocalCharacter = Self.Character or Self.CharacterAdded:Wait()
                     
-                    local Cooldown = Tool:WaitForChild("ShootingCooldown").Value
+                    local Cooldown = Tool:WaitForChild("ShootingCooldown", 2)
+                    if Cooldown then Cooldown = Cooldown.Value else Cooldown = 0.05 end
                     local DelayCfg = shared.azov["delay changer"]
                     if DelayCfg and DelayCfg["enabled"] then
                         local WeaponCfg = DelayCfg["weapon configs"]
@@ -4027,7 +4037,8 @@ end)
 
                                 if DoubleTap then
                                     local ForcedOriginDT = Tool:FindFirstChild("Default") and (Tool.Default:FindFirstChild("Mesh") and Tool.Default.Mesh:FindFirstChild("Muzzle")) or { ["WorldPosition"] = (ToolHandle.CFrame * WeaponOffset).Position }
-                                    local WeaponRangeDT = Tool:WaitForChild("Range")
+                                    local WeaponRangeDT = Tool:WaitForChild("Range", 2)
+                                    if not WeaponRangeDT then return end
                                     local HitPositionDT = Script.Locals.HitPosition
                                     local AimPositionDT = SilentAim and HitPositionDT or (ForcedOriginDT.WorldPosition + DaHood.GetAim(ForcedOriginDT.WorldPosition) * WeaponRangeDT.Value)
                                     local A0, A1, A2 = DaHood.ShootGun({
@@ -4039,7 +4050,7 @@ end)
                                         ["LegitPosition"] = AimPositionDT,
                                         ["Range"] = WeaponRangeDT.Value
                                     })
-                                    ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOriginDT.WorldPosition, A0, A1, A2, Time)
+                                    SafeFireMain("ShootGun", ToolHandle, ForcedOriginDT.WorldPosition, A0, A1, A2, Time)
                                     ToolEvent:FireServer()
                                 end
                                 for _ = 1, 5 do
@@ -4071,7 +4082,8 @@ end)
 
                                     local TotalSpread = Vector3.new(SpreadX, SpreadY, SpreadZ)
                                     local AimPosition
-                                    local WeaponRange = Tool:WaitForChild("Range")
+                                    local WeaponRange = Tool:WaitForChild("Range", 2)
+                                    if not WeaponRange then return end
                                     AimPosition = SilentAim and (ForcedOrigin.WorldPosition + ((HitPosition - ForcedOrigin.WorldPosition).Unit + TotalSpread) * WeaponRange.Value) or (ForcedOrigin.WorldPosition + (DaHood.GetAim(ForcedOrigin.WorldPosition) + TotalSpread) * WeaponRange.Value)
                                     local Arg0, Arg1, Arg2 = DaHood.ShootGun({
                                         ["Shooter"] = LocalCharacter,
@@ -4082,7 +4094,7 @@ end)
                                         ["LegitPosition"] = ForcedOrigin.WorldPosition + (DaHood.GetAim(ForcedOrigin.WorldPosition) + TotalSpread) * WeaponRange.Value,
                                         ["Range"] = WeaponRange.Value
                                     })
-                                    ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2, Time)
+                                    SafeFireMain("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2, Time)
                                 end
                                 ToolEvent:FireServer()
                             end
@@ -4096,7 +4108,8 @@ end)
                                     local AimPosition
                                     local ForcedOrigin = Tool:FindFirstChild("Default") and (Tool.Default:FindFirstChild("Mesh") and Tool.Default.Mesh:FindFirstChild("Muzzle")) or { ["WorldPosition"] = (ToolHandle.CFrame * WeaponOffset).Position }
 
-                                    local WeaponRange = Tool:WaitForChild("Range")
+                                    local WeaponRange = Tool:WaitForChild("Range", 2)
+                                    if not WeaponRange then return end
                                     AimPosition = SilentAim and HitPosition or (ForcedOrigin.WorldPosition + DaHood.GetAim(ForcedOrigin.WorldPosition) * 200)
                                     local Arg0, Arg1, Arg2 = DaHood.ShootGun({
                                         ["Shooter"] = LocalCharacter,
@@ -4107,7 +4120,7 @@ end)
                                         ["LegitPosition"] = ForcedOrigin.WorldPosition + DaHood.GetAim(ForcedOrigin.WorldPosition) * 200,
                                         ["Range"] = WeaponRange.Value
                                     })
-                                    ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2)
+                                    SafeFireMain("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2)
                                     ToolEvent:FireServer()
                                     Script.Locals.DoubleTapState = false
                                 end
@@ -4128,7 +4141,7 @@ end)
                                     ["LegitPosition"] = ForcedOrigin.WorldPosition + DaHood.GetAim(ForcedOrigin.WorldPosition) * 200,
                                     ["Range"] = WeaponRange.Value
                                 })
-                                ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2)
+                                SafeFireMain("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2)
                                 ToolEvent:FireServer()
                             end
                         elseif Gun == "Auto" then
@@ -4168,8 +4181,9 @@ end)
 
                                             local TotalSpread = Vector3.new(SpreadX, SpreadY, SpreadZ)
                                             local AimPosition
-                                            local WeaponRange = Tool:WaitForChild("Range")
-                                            AimPosition = SilentAim and (ForcedOrigin.WorldPosition + ((HitPosition - ForcedOrigin.WorldPosition).Unit + TotalSpread) * WeaponRange.Value) or (ForcedOrigin.WorldPosition + (DaHood.GetAim(ForcedOrigin.WorldPosition) + TotalSpread) * WeaponRange.Value)
+                                            local WeaponRange = Tool:WaitForChild("Range", 2)
+                                    if not WeaponRange then return end
+                                    AimPosition = SilentAim and (ForcedOrigin.WorldPosition + ((HitPosition - ForcedOrigin.WorldPosition).Unit + TotalSpread) * WeaponRange.Value) or (ForcedOrigin.WorldPosition + (DaHood.GetAim(ForcedOrigin.WorldPosition) + TotalSpread) * WeaponRange.Value)
                                             local Arg0, Arg1, Arg2 = DaHood.ShootGun({
                                                 ["Shooter"] = LocalCharacter,
                                                 ["Handle"] = ToolHandle,
@@ -4179,7 +4193,7 @@ end)
                                                 ["LegitPosition"] = ForcedOrigin.WorldPosition + (DaHood.GetAim(ForcedOrigin.WorldPosition) + TotalSpread) * WeaponRange.Value,
                                                 ["Range"] = WeaponRange.Value
                                             })
-                                            ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2, CurrentTime)
+                                            SafeFireMain("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, Arg0, Arg1, Arg2, CurrentTime)
                                         end
                                         task.wait(Cooldown + 0.0095)
                                         Ticks[Tool.Name] = tick()
@@ -4190,8 +4204,10 @@ end)
                                 Flag = false
                             end
                         elseif Gun == "Burst" then
-                            local Tolerance = Tool:WaitForChild("ToleranceCooldown").Value
-                            local ShootingCool = Tool:WaitForChild("ShootingCooldown").Value
+                            local Tolerance = Tool:WaitForChild("ToleranceCooldown", 2)
+                            Tolerance = Tolerance and Tolerance.Value or 0.1
+                            local ShootingCool = Tool:WaitForChild("ShootingCooldown", 2)
+                            ShootingCool = ShootingCool and ShootingCool.Value or 0.05
                             if tick() - Ticks[Tool.Name] >= Tolerance and (not _G.GUN_COMBAT_TOGGLE and DaHood.CanShoot(LocalCharacter)) then
                                 Ticks[Tool.Name] = tick()
                                 ToolEvent:FireServer("Shoot")
@@ -4212,14 +4228,15 @@ end)
                                             ["BeamColor"] = BeamCol,
                                             ["Range"] = WeaponRange.Value
                                         })
-                                        ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, v18, v19, v20)
+                                        SafeFireMain("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, v18, v19, v20)
                                         task.wait(ShootingCool + 0.0095)
                                     end
                                     ToolEvent:FireServer()
                                 end)
                             end
-                        elseif Gun == "Rifle" or GunType == "SMG" then
-                            local ShootingCool = Tool:WaitForChild("ShootingCooldown").Value
+                        elseif Gun == "Rifle" or Gun == "SMG" then
+                            local ShootingCool = Tool:WaitForChild("ShootingCooldown", 2)
+                            ShootingCool = ShootingCool and ShootingCool.Value or 0.05
                             if Check and (not _G.GUN_COMBAT_TOGGLE and DaHood.CanShoot(LocalCharacter)) then
                                 Ticks[Tool.Name] = tick()
                                 ToolEvent:FireServer("Shoot")
@@ -4243,7 +4260,7 @@ end)
                                             ["BeamColor"] = BeamCol,
                                             ["Range"] = WeaponRange.Value
                                         })
-                                        ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, v18, v19, v20)
+                                        SafeFireMain("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, v18, v19, v20)
                                         Ticks[Tool.Name] = tick()
                                     end
                                     ToolEvent:FireServer()
@@ -4271,7 +4288,7 @@ end)
                                     ["BeamColor"] = BeamCol,
                                     ["Range"] = WeaponRange.Value
                                 })
-                                ReplicatedStorage.MainEvent:FireServer("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, v16, v17, v18)
+                                SafeFireMain("ShootGun", ToolHandle, ForcedOrigin.WorldPosition, v16, v17, v18)
                                 ToolEvent:FireServer()
                             end
                         end
