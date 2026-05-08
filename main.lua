@@ -1,5 +1,3 @@
-shared.azov = shared.azovbeta
-
 do
     local _g = getinfo or debug.getinfo
     local _d = false
@@ -154,6 +152,48 @@ end)
     local Self = Players.LocalPlayer
     local Mouse = Self:GetMouse()
     local Camera = workspace.CurrentCamera
+    local MainEvent = ReplicatedStorage:WaitForChild("MainEvent")
+
+    -- Das Hood Infinite Range Version
+    local oldNamecall
+    if typeof(hookmetamethod) == "function" then
+        oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+            local method = getnamecallmethod()
+            local args = {...}
+
+            if self == MainEvent and method == "FireServer" and args[1] == "ShootGun" then
+                local irCfg = shared.azov["rage"]["infinite range"]
+                if irCfg and irCfg["enabled"] and irCfg["method"] == "hooks" then
+                    if args[6] and type(args[6]) == "number" then
+                        args[6] = 10 
+                    end
+                    if args[3] and args[5] then
+                        local direction = (args[3] - args[5]).Unit
+                        args[3] = args[5] + (direction * 10)
+                    end
+                    return oldNamecall(self, unpack(args))
+                end
+            end
+
+            if args[1] == "CHECKER_4" then
+                local irCfg = shared.azov["rage"]["infinite range"]
+                if irCfg and irCfg["enabled"] and irCfg["method"] == "hooks" then
+                    return nil
+                end
+            end
+
+            return oldNamecall(self, unpack(args))
+        end)
+    else
+        task.spawn(function()
+            while task.wait(5) do
+                local irCfg = shared.azov["rage"]["infinite range"]
+                if irCfg and irCfg["enabled"] and irCfg["method"] == "hooks" then
+                    warn("your executor doesnt support hook. please use the hookless version.")
+                end
+            end
+        end)
+    end
 
     local AppliedSkins = {};
     local KnifeData = {};
@@ -828,6 +868,44 @@ end)
     local function ProcessTool(Tool)
         if ToolRegistry[Tool] then return end;
         ToolRegistry[Tool] = true;
+
+        -- Range Enhancer logic (teleport bullet style)
+        pcall(function()
+            local reCfg = shared.azov["rage"]["range enhancer"]
+            if reCfg then
+                for _, conn in ipairs(getconnections(Tool:GetPropertyChangedSignal("Grip"))) do
+                    conn:Disable()
+                end
+
+                Tool.Activated:Connect(function()
+                    local reCfg = shared.azov["rage"]["range enhancer"]
+                    if reCfg and reCfg["enabled"] and Self.Character and Self.Character:FindFirstChild("RightHand") then
+                        local targetPos = Script.Locals.HitPosition or Mouse.Hit.p
+                        local handCFrame = Self.Character.RightHand.CFrame
+                        local studs = reCfg["studs"] or 12
+                        
+                        -- grip teleport logic
+                        local originalGrip = Tool.Grip
+                        local actualOrigin = handCFrame * CFrame.new(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0)
+                        
+                        -- Calculate look direction from hand to target
+                        local dir = (targetPos - handCFrame.Position).Unit
+                        local targetCFrame = CFrame.new(handCFrame.Position + (dir * studs), targetPos)
+                        local newGrip = actualOrigin:ToObjectSpace(targetCFrame):Inverse()
+                        
+                        local oldParent = Tool.Parent
+                        Tool.Parent = Self.Backpack
+                        Tool.Grip = newGrip
+                        Tool.Parent = oldParent
+                        task.wait()
+                        Tool.Parent = Self.Backpack
+                        Tool.Grip = originalGrip
+                        Tool.Parent = oldParent
+                    end
+                end)
+            end
+        end)
+
         local SkinChangerCfg = shared.azov["skins"];
         if not SkinChangerCfg["enabled"] then return end;
         local Skins = SkinChangerCfg["options"];
@@ -1672,10 +1750,10 @@ end)
         if type(hookfunction) == "function" then
             OldShoot = hookfunction(GunHandler.shoot, function(...)
                 local args = {...}
-                local HitPos, HitPart, HitNormal = OldShoot(unpack(args))
-
                 local realArgs = args[1]
                 if realArgs == GunHandler then realArgs = args[2] end
+
+                local HitPos, HitPart, HitNormal = OldShoot(unpack(args))
 
                 if not realArgs or typeof(realArgs) ~= "table" or not realArgs.Handle or realArgs.Shooter ~= Self.Character then
                     return HitPos, HitPart, HitNormal
@@ -1724,10 +1802,10 @@ end)
             local OriginalShoot = GunHandler.shoot
             GunHandler.shoot = function(...)
                 local args = {...}
-                local HitPos, HitPart, HitNormal = OriginalShoot(unpack(args))
-
                 local realArgs = args[1]
                 if realArgs == GunHandler then realArgs = args[2] end
+
+                local HitPos, HitPart, HitNormal = OriginalShoot(unpack(args))
 
                 if not realArgs or typeof(realArgs) ~= "table" or not realArgs.Handle or realArgs.Shooter ~= Self.Character then
                     return HitPos, HitPart, HitNormal
@@ -3238,7 +3316,7 @@ end)
                 local NearestPart = Script:GetClosestPartToCursor(Object)
                 local HitPosition
 
-                if Config["point"] == 'closest point' then
+                if Config["part"] == 'closest point' then
                     local NearestPoint
                     if Config["closest point"]["mode"] == 'advanced' then
                         NearestPoint = Script:GetClosestPointOnPart(NearestPart, Config["closest point"]["scale"])
@@ -3247,14 +3325,14 @@ end)
                     end
                     HitPosition = NearestPoint
 
-                elseif Config["point"] == 'closest part' then
+                elseif Config["part"] == 'closest part' then
                     HitPosition = NearestPart.Position
 
-                elseif typeof(Config["point"]) == 'table' then
-                    HitPosition = Script:GetClosestPartToCursorFilter(Object, Config["point"]).Position
+                elseif typeof(Config["part"]) == 'table' then
+                    HitPosition = Script:GetClosestPartToCursorFilter(Object, Config["part"]).Position
 
                 else
-                    HitPosition = Object[Config["point"]].Position
+                    HitPosition = Object[Config["part"]].Position
                 end
 
                 if Config["prediction"]["enabled"] then
@@ -3282,7 +3360,7 @@ end)
                 local NearestPart = Script:GetClosestPartToCursor(Object)
                 local HitPosition
 
-                local HitPart = Config["point"]
+                local HitPart = Config["part"]
 
                 if HitPart == 'closest point' then
                     local NearestPoint
@@ -3322,7 +3400,16 @@ end)
                         local weaponName = tool and string.lower(tool.Name)
                         
                         local futureData = Config["future"]
-                        local futureCfg = futureData and futureData[weaponName] and futureData[weaponName]["future"]
+                        local futureCfg
+                        if futureData then
+                            if weaponName:find("shotgun") or weaponName:find("barrel") then
+                                futureCfg = futureData["shotguns"]
+                            elseif weaponName:find("revolver") or weaponName:find("pistol") or weaponName:find("glock") then
+                                futureCfg = futureData["pistols"]
+                            else
+                                futureCfg = futureData["others"]
+                            end
+                        end
                         
                         local FutureX, FutureY, FutureZ = 0, 0, 0
                         if futureCfg and futureCfg["enabled"] then
@@ -3397,7 +3484,7 @@ end)
             local uiCfg  = shared.azov["globals"]["hotkey ui"] or {}
             local FONT   = uiCfg["font"] or Enum.Font.Arcade
             local SZ     = uiCfg["text size"] or 11
-            local AZOV_SZ = 16
+            local AZOV_SZ = SZ + 5
             local AZOV_COL = uiCfg["azov color"] or Color3.fromRGB(255, 255, 255)
             local ROW_H  = SZ + 4
             local BRAND_H = AZOV_SZ + 4
@@ -3463,7 +3550,7 @@ end)
                     l.TextStrokeTransparency = strokeA == nil and 1 or strokeA
                     l.TextXAlignment         = Enum.TextXAlignment.Left
                     l.ZIndex                 = zidx
-                    l.Text                   = "beta"
+                    l.Text                   = "cc"
                     l.Parent                 = CcFrame
                     return l
                 end
@@ -3645,11 +3732,6 @@ end)
                 table.insert(lines, { text = "walk speed" })
             end
 
-            local irCfgHud = shared.azov["rage"]["infinite range"]
-            if irCfgHud and irCfgHud["enabled"] and Script.Locals.InfRangeActive then
-                table.insert(lines, { text = "inf range" })
-            end
-
             local _jumpMode = shared.azov["movement"]["jump"]["mode"] or 'hold'
             if shared.azov["movement"]["jump"]["value"] and (_jumpMode == 'always' or Script.Locals.IsJumping) then
                 table.insert(lines, { text = "jump" })
@@ -3666,8 +3748,28 @@ end)
             BrandFrame.Visible  = true
             BrandFrame.Position = UDim2.fromOffset(cx, blockTop)
 
+            -- update azov size
+            LblAzov.TextSize = AZOV_SZ
+            for _, l in ipairs(BrandFrame:GetDescendants()) do
+                if l:IsA("TextLabel") and l.Name ~= "LblAzov" and l.Text == "beta" then
+                    l.TextSize = AZOV_SZ
+                end
+            end
+
             for i = 1, MAX_ROWS do
                 Script.Locals.HudLines[i].container.Visible = false
+                -- update normal texts size
+                Script.Locals.HudLines[i].feat.TextSize = SZ
+                for _, layer in ipairs(Script.Locals.HudLines[i].tLayers) do
+                    -- layers have different extra sizes
+                    if layer.ZIndex == 3 then
+                        layer.TextSize = SZ + 4
+                    elseif layer.ZIndex == 4 then
+                        layer.TextSize = SZ + 2
+                    else
+                        layer.TextSize = SZ
+                    end
+                end
             end
 
             local rowTop = blockTop + BRAND_H + GAP
@@ -5052,7 +5154,7 @@ end)
                 if TriggerToggle then
                     Script.Locals.TriggerbotTarget = Script:GetClosestPlayerToCursor(
                         shared.azov["triggerbot"]["max distance"] * 100,
-                        shared.azov["triggerbot"]["radius"] * 5,
+                        math.huge,
                         shared.azov["triggerbot"]["offscreen targeting"]
                     )
                 else
@@ -5138,14 +5240,6 @@ end)
 
             if Input.KeyCode == Enum.KeyCode.LeftControl then
                 CanTriggerbotShoot = false
-            end
-
-            local irCfg = shared.azov["rage"]["infinite range"]
-            if irCfg and irCfg["key"] then
-                local okIR, irKeyCode = pcall(function() return Enum.KeyCode[irCfg["key"]:upper()] end)
-                if okIR and Input.KeyCode == irKeyCode and irCfg["enabled"] then
-                    Script.Locals.InfRangeActive = not Script.Locals.InfRangeActive
-                end
             end
 
             local espCfgHK = shared.azov["esp"]
@@ -5294,7 +5388,7 @@ end)
             if shared.azov["triggerbot"]["targeting mode"] == 'automatic' then
                 Script.Locals.TriggerbotTarget = Script:GetClosestPlayerToCursor(
                     shared.azov["triggerbot"]["max distance"] * 100,
-                    shared.azov["triggerbot"]["radius"] * 5,
+                    math.huge,
                     shared.azov["triggerbot"]["offscreen targeting"]
                 )
             end
@@ -5314,42 +5408,27 @@ end)
             task.spawn(AutomatedPrediction)
 
             local irCfg = shared.azov["rage"]["infinite range"]
-            if irCfg and irCfg["enabled"] and Script.Locals.InfRangeActive then
-                if irCfg["bullet tp"] then
-                    getgenv().InfiniteRange = getgenv().InfiniteRange or {}
-                    getgenv().InfiniteRange.Enabled = true
-                    getgenv().InfiniteRange.MaxRange = irCfg["max range"] or 100000
-                    getgenv().InfiniteRange.Active = true
-                else
-                    if getgenv().InfiniteRange then
-                        getgenv().InfiniteRange.Active = false
-                    end
-
-                    local character = Self.Character
-                    if character then
-                        local tool = character:FindFirstChildOfClass("Tool")
-                        if tool then
-                            local maxRange = irCfg["max range"] or 100000
-                            local rangeProps = { "Range", "MaxRange", "FireRange", "Distance", "MaxDistance" }
-                            for _, propName in ipairs(rangeProps) do
-                                local rangeValue = tool:FindFirstChild(propName)
-                                if rangeValue and rangeValue:IsA("NumberValue") then
-                                    rangeValue.Value = maxRange
-                                end
-                                local config = tool:FindFirstChild("Configuration") or tool:FindFirstChild("GunConfig")
-                                if config then
-                                    local r = config:FindFirstChild(propName)
-                                    if r and r:IsA("NumberValue") then
-                                        r.Value = maxRange
-                                    end
+            if irCfg and irCfg["enabled"] then
+                local character = Self.Character
+                if character then
+                    local tool = character:FindFirstChildOfClass("Tool")
+                    if tool then
+                        local maxRange = 99999999
+                        local rangeProps = { "Range", "MaxRange", "FireRange", "Distance", "MaxDistance" }
+                        for _, propName in ipairs(rangeProps) do
+                            local rangeValue = tool:FindFirstChild(propName)
+                            if rangeValue and rangeValue:IsA("NumberValue") then
+                                rangeValue.Value = maxRange
+                            end
+                            local config = tool:FindFirstChild("Configuration") or tool:FindFirstChild("GunConfig")
+                            if config then
+                                local r = config:FindFirstChild(propName)
+                                if r and r:IsA("NumberValue") then
+                                    r.Value = maxRange
                                 end
                             end
                         end
                     end
-                end
-            else
-                if getgenv().InfiniteRange then
-                    getgenv().InfiniteRange.Active = false
                 end
             end
 
@@ -5360,11 +5439,11 @@ end)
                         if HRP then
                             local Sz = shared.azov["hitbox"]["size"]
                             HRP.Size = Vector3.new(Sz, Sz, Sz)
+                            HRP.CanCollide = false
                             if shared.azov["hitbox"]["visualize"] then
                                 HRP.Transparency = 0.7
                                 HRP.BrickColor   = BrickColor.new("Really blue")
                                 HRP.Material     = Enum.Material.Neon
-                                HRP.CanCollide   = false
                             else
                                 HRP.Transparency = 1
                             end
