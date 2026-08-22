@@ -4797,8 +4797,10 @@ do -- Library
         --
         Library.UI.ScreenGUI = MainUI
         --
-        MainUI.Visible = false
-        MainUI.Active = false
+        if typeof(MainUI) == 'Instance' and MainUI:IsA('GuiObject') then
+            MainUI.Visible = false
+            MainUI.Active = false
+        end
         --
         local Outline = Library:CreateObject("Frame", {
             Name = "Outline",
@@ -6898,14 +6900,13 @@ do -- Library
                 end
             end
             --
-            local R, G, B = Library.Theme.Default.Accent.R * 255, Library.Theme.Default.Accent.G * 255, Library.Theme.Default.Accent.B * 255
+            local R, G, B = 180, 100, 255
             --
-            Library:UpdateWatermark(("game<font color='rgb(%d, %d, %d)'>snooze</font>  <font color='rgb(%d, %d, %d)'>%s</font> <font size='10'>FPS</font>  %s"):format(R, G, B, R, G, B, "60", os.date("%X")))
+            Library:UpdateWatermark(("Private.club  <font size='10'>%s</font>  %s"):format(os.date("%H"), os.date("%X")))
             --
             do -- Connections
                 Library:Connection(RunService.PostSimulation, function()
                     if Library.UI.Initialized and MainWatermark.Visible then
-                        local R, G, B = 180, 100, 255
                         local FPS = math.floor(1 / math.abs(Watermark.Tick - tick()))
                         --
                         Watermark.Tick = tick()
