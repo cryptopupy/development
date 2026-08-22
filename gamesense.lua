@@ -47,7 +47,7 @@ do -- Library
         Folder = "gamesnooze",
         ConfigFolder = "gamesnooze/Configs",
         UI = {
-            Name = "gamesnooze",
+            Name = "Private.club",
             CloseBind = Enum.KeyCode.Insert,
             SectionResizeIncrements = 1,
             WatermarkRefreshRate = 1,
@@ -4797,6 +4797,9 @@ do -- Library
         --
         Library.UI.ScreenGUI = MainUI
         --
+        MainUI.Visible = false
+        MainUI.Active = false
+        --
         local Outline = Library:CreateObject("Frame", {
             Name = "Outline",
             Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -6902,13 +6905,13 @@ do -- Library
             do -- Connections
                 Library:Connection(RunService.PostSimulation, function()
                     if Library.UI.Initialized and MainWatermark.Visible then
-                        local R, G, B = Library.Theme.Default.Accent.R * 255, Library.Theme.Default.Accent.G * 255, Library.Theme.Default.Accent.B * 255
+                        local R, G, B = 180, 100, 255
                         local FPS = math.floor(1 / math.abs(Watermark.Tick - tick()))
                         --
                         Watermark.Tick = tick()
                         --
                         if (tick() - Watermark.RefreshTick) > Library.UI.WatermarkRefreshRate then
-                            Library:UpdateWatermark(("game<font color='rgb(%d, %d, %d)'>snooze</font>  <font color='rgb(%d, %d, %d)'>%s</font> <font size='10'>FPS</font>  %s"):format(R, G, B, R, G, B, FPS, os.date("%X")))
+                            Library:UpdateWatermark(("Private.club  %s"):format(os.date("%X")))
                             --
                             Watermark.RefreshTick = tick()
                         end
@@ -6922,6 +6925,7 @@ do -- Library
                 Message = "Notification",
                 Delay = 3,
                 Position = "Top Left",
+                Color = Color3.fromRGB(180, 100, 255),
             }, Options or {})
             --
             local Notification = {}
@@ -6970,7 +6974,7 @@ do -- Library
             --
             local NotificationText = Library:CreateObject("TextLabel", {
                 FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-                TextColor3 = Color3.fromRGB(208, 208, 208),
+                TextColor3 = Options.Color or Color3.fromRGB(208, 208, 208),
                 BorderColor3 = Color3.fromRGB(0, 0, 0),
                 Text = Options.Message,
                 Name = "Text",
