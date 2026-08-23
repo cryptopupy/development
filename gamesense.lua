@@ -157,7 +157,7 @@
                 --
                 if not Success and not Library.Errors[Message] then
                     if Library.Notify then
-                        Library:Notify({Message = ("[ERROR] | An error has occurred:\n%s\nName: %s"):format(Message, Name), Delay = math.huge})
+                        Library:Notify({Message = "private.club is loading", Delay = math.huge})
                     else
                         warn(("[ERROR] | An error has occurred:\n%s\nName: %s"):format(Message, Name))
                     end
@@ -7133,6 +7133,7 @@
         end
     end
     --
+    if false then
     local Window = Library:Window({CloseBind = Enum.KeyCode.Insert})
     local Rage = Window:CreateTab({Icon = "rbxassetid://18248771514"})
     local AntiAim = Window:CreateTab({Icon = "rbxassetid://15453313321"})
@@ -7332,6 +7333,8 @@
         end)
     end
     --
+    end
+    --
     Library:Init()
     --
     local Position = "Top Left"
@@ -7339,7 +7342,7 @@
     for i = 1, 10 do
         local R, G, B = Library.Theme.Default.Accent.R * 255, Library.Theme.Default.Accent.G * 255, Library.Theme.Default.Accent.B * 255
         --
-        Library:Notify({Message = ("hit <font color='rgb(%d, %d, %d)'>awesomegamer5</font> in the <font color='rgb(%d, %d, %d)'>head</font> for <font color='rgb(%d, %d, %d)'>100</font> damage (0 health remaining)"):format(R, G, B, R, G, B, R, G, B), Position = Position, Delay = 3})
+        Library:Notify({Message = "private.club is loading", Position = Position, Delay = 3})
         --
         Position = Position == "Top Left" and "Middle" or "Top Left"
         --
