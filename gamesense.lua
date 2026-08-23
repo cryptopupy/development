@@ -7335,6 +7335,8 @@
     --
     end
     --
+    Library:Window({CloseBind = Enum.KeyCode.Insert})
+    --
     Library:Init()
     --
     local Position = "Top Left"
