@@ -7095,18 +7095,6 @@
                 return Notification
             end
             --
-            function Library:Init()
-                Library.UI.Initialized = true
-                --
-                Library:CreateWatermark()
-                --
-                Library:Connection(Camera:GetPropertyChangedSignal("ViewportSize"), function()
-                    Viewport = Camera.ViewportSize
-                    --
-                    Outline.Position = UDim2.fromOffset((Viewport.X / 2) - (Outline.Size.X.Offset / 2), (Viewport.Y / 2) - (Outline.Size.Y.Offset / 2))
-                end)
-            end
-            --
             function Library:Unload()
                 Camera.CameraSubject = Client.Character.Humanoid
                 --
@@ -7131,6 +7119,18 @@
             --
             return setmetatable(Window, Library)
         end
+    end
+    --
+    function Library:Init()
+        Library.UI.Initialized = true
+        --
+        Library:CreateWatermark()
+        --
+        Library:Connection(Camera:GetPropertyChangedSignal("ViewportSize"), function()
+            Viewport = Camera.ViewportSize
+            --
+            Outline.Position = UDim2.fromOffset((Viewport.X / 2) - (Outline.Size.X.Offset / 2), (Viewport.Y / 2) - (Outline.Size.Y.Offset / 2))
+        end)
     end
     --
     if false then
