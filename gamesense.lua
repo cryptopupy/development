@@ -6920,7 +6920,7 @@
                             Watermark.Tick = tick()
                             --
                             if (tick() - Watermark.RefreshTick) > Library.UI.WatermarkRefreshRate then
-                                Library:UpdateWatermark(("Private.club  %s"):format(os.date("%X")))
+                                Library:UpdateWatermark(("private.club  %s"):format(os.date("%X")))
                                 --
                                 Watermark.RefreshTick = tick()
                             end
