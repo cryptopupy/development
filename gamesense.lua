@@ -47,7 +47,7 @@
             Folder = "gamesnooze",
             ConfigFolder = "gamesnooze/Configs",
             UI = {
-                Name = "Private.club",
+                Name = "private.club",
                 CloseBind = Enum.KeyCode.Insert,
                 SectionResizeIncrements = 1,
                 WatermarkRefreshRate = 1,
@@ -6910,7 +6910,7 @@
                 --
                 local R, G, B = 180, 100, 255
                 --
-                Library:UpdateWatermark(("Private.club  <font size='10'>%s</font>  %s"):format(os.date("%H"), os.date("%X")))
+                Library:UpdateWatermark(("private.club  <font size='10'>%s</font>  %s"):format(os.date("%H"), os.date("%X")))
                 --
                 do -- Connections
                     Library:Connection(RunService.PostSimulation, function()
