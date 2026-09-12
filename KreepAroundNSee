@@ -1,0 +1,7 @@
+local scriptkey = "test"
+
+if scriptkey == "test" then
+    print("correct key")
+else
+    print("incorrect")
+end
