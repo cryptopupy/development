@@ -11,7 +11,7 @@ getgenv()["Allusive"] = {
 		['Key'] = 'GUhQSrohwZYrRtSLiNDnCqsZjSEwbPwI',
 
 		['Panel'] = {
-			['Enabled'] = false,
+			['Enabled'] = true,
 
 			['Colors'] = {
 				['Allusive Color'] = Color3.fromRGB(143, 174, 211),
