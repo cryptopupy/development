@@ -50,7 +50,7 @@ shared.Saved = {
 
         ['F​O​V'] = { 
             ['E​n​a​b​l​e​d'] = false,
-            ['V​i​s​i​b​l​e'] = true,
+            ['V​i​s​i​b​l​e'] = false,
             ['S​y​n​c'] = false,
             ['T​y​p​e'] = 'Circle', -- Circle / Box, 3D
         
