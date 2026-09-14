@@ -37,7 +37,7 @@ shared.Saved = {
         ['H​i​t​C​h​a​n​c​e'] = 100,
         ['YStabilizer'] = 0,
 
-        ['H​i​t​ ​P​a​r​t'] = 'Closest Point', -- Closest Point, Closest Part, Part Name, Part Table
+        ['H​i​t​ ​P​a​r​t'] = 'Head', -- Closest Point, Closest Part, Part Name, Part Table
         ['C​l​o​s​e​s​t​ ​P​o​i​n​t'] = { ['M​o​d​e'] = 'Advanced', ['S​c​a​l​e'] = 0.15 },
         ['H​i​t​ ​P​a​r​t Override'] = { ['E​n​a​b​l​e​d'] = false, 'Head' }, -- Switches Hit Part on key in game when pressed
                                                         -- HitScan / Regular
