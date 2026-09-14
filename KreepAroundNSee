@@ -5,12 +5,6 @@ if scriptkey == "test" then
 else
     print("incorrect")
 end
--- This file was protected using Luraph Obfuscator v14.8 [https://lura.ph/]
-
--- This file was protected using Luraph Obfuscator v15.0 [https://lura.ph/]
-
--- This file was protected using Luraph Obfuscator v14.8 [https://lura.ph/]
-
 getgenv()["Allusive"] = {
 
 	['Core'] = {
