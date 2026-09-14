@@ -10,7 +10,7 @@ shared.Saved = {
     ['G​e​n​e​r​a​l​'] = { 
         ['​H​o​t​k​e​y​s​'] = { 
             ['A​i​m​ ​B​o​t'] = 'C', ['W​a​l​k​ ​S​p​e​e​d'] = 'V', ['S​i​l​e​n​t​ ​A​i​m'] = 'O', ['D​o​u​b​l​e​ ​T​a​p'] = 'E', ['T​r​i​g​g​e​r​ ​B​o​t'] = 'X',
-            ['T​r​i​g​g​e​r​ ​B​o​t​ ​T​a​r​g​e​t'] = 'Q', ['S​i​l​e​n​t​ ​A​i​m​ ​T​a​r​g​e​t'] = 'Q', ['H​i​t​ ​P​a​r​t Override'] = 'F', ['I​n​v​e​n​t​o​r​y ​S​o​r​t​e​r'] = 'R'
+            ['T​r​i​g​g​e​r​ ​B​o​t​ ​T​a​r​g​e​t'] = 'Q', ['S​i​l​e​n​t​ ​A​i​m​ ​T​a​r​g​e​t'] = 'C', ['H​i​t​ ​P​a​r​t Override'] = 'F', ['I​n​v​e​n​t​o​r​y ​S​o​r​t​e​r'] = 'R'
         },
         ['S​h​o​w​ ​H​o​t​k​e​y​s'] = true   
     },
@@ -52,11 +52,11 @@ shared.Saved = {
             ['E​n​a​b​l​e​d'] = false,
             ['V​i​s​i​b​l​e'] = true,
             ['S​y​n​c'] = false,
-            ['T​y​p​e'] = 'Box', -- Circle / Box, 3D
+            ['T​y​p​e'] = 'Circle', -- Circle / Box, 3D
         
             ['B​o​x'] = {7, 7},
             ['3D'] = {5, 7, 5},
-            ['C​i​r​c​l​e'] = 150,
+            ['C​i​r​c​l​e'] = 99999999999,
             ['Hit Scan'] = math.huge, -- Radius to scan for players within
 
             ['W​e​a​p​o​n​ ​C​o​n​f​i​g​s'] = { 
@@ -113,7 +113,7 @@ shared.Saved = {
     ['P​l​a​y​e​r​ ​M​o​d​i​f​i​c​a​t​i​o​n​s'] = {
         ['N​o​ ​J​u​m​p​ ​C​o​o​l​d​o​w​n'] = true,
         ['N​o​ ​T​r​i​p​p​i​n​g'] = true,
-        ['W​a​l​k​ ​S​p​e​e​d'] = { ['E​n​a​b​l​e​d'] = true, ['S​p​e​e​d'] = 9, ['G​l​i​d​e'] = false },
+        ['W​a​l​k​ ​S​p​e​e​d'] = { ['E​n​a​b​l​e​d'] = true, ['S​p​e​e​d'] = 3, ['G​l​i​d​e'] = true },
     },    
 
     ['G​a​m​e ​U​t​i​l​i​t​i​e​s'] = {
