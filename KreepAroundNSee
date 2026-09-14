@@ -9,7 +9,7 @@ shared['Auth_Key'] = ''
 shared.Saved = {
     ['G​e​n​e​r​a​l​'] = { 
         ['​H​o​t​k​e​y​s​'] = { 
-            ['A​i​m​ ​B​o​t'] = 'C', ['W​a​l​k​ ​S​p​e​e​d'] = 'G', ['S​i​l​e​n​t​ ​A​i​m'] = 'O', ['D​o​u​b​l​e​ ​T​a​p'] = 'E', ['T​r​i​g​g​e​r​ ​B​o​t'] = 'X',
+            ['A​i​m​ ​B​o​t'] = 'C', ['W​a​l​k​ ​S​p​e​e​d'] = 'V', ['S​i​l​e​n​t​ ​A​i​m'] = 'O', ['D​o​u​b​l​e​ ​T​a​p'] = 'E', ['T​r​i​g​g​e​r​ ​B​o​t'] = 'X',
             ['T​r​i​g​g​e​r​ ​B​o​t​ ​T​a​r​g​e​t'] = 'Q', ['S​i​l​e​n​t​ ​A​i​m​ ​T​a​r​g​e​t'] = 'Q', ['H​i​t​ ​P​a​r​t Override'] = 'F', ['I​n​v​e​n​t​o​r​y ​S​o​r​t​e​r'] = 'R'
         },
         ['S​h​o​w​ ​H​o​t​k​e​y​s'] = true   
@@ -30,7 +30,7 @@ shared.Saved = {
 
     ['S​i​l​e​n​t​ ​A​i​m'] = { 
         ['E​n​a​b​l​e​d'] = true, 
-        ['S​e​l​e​c​t​i​o​n'] = 'Automatic', -- Automatic / Target
+        ['S​e​l​e​c​t​i​o​n'] = 'Target', -- Automatic / Target
         ['M​a​x​ ​D​i​s​t​a​n​c​e'] = math.huge, -- Max distance to scan within
         ['YAxis'] = false,
 
@@ -49,7 +49,7 @@ shared.Saved = {
         },
 
         ['F​O​V'] = { 
-            ['E​n​a​b​l​e​d'] = true, 
+            ['E​n​a​b​l​e​d'] = false,
             ['V​i​s​i​b​l​e'] = true,
             ['S​y​n​c'] = false,
             ['T​y​p​e'] = 'Box', -- Circle / Box, 3D
@@ -69,7 +69,7 @@ shared.Saved = {
     },
     
     ['A​i​m​ ​B​o​t'] = {
-        ['E​n​a​b​l​e​d'] = true, 
+        ['E​n​a​b​l​e​d'] = false, 
         ['H​i​t​ ​P​a​r​t'] = 'Head', -- Closest Point, Closest Part, Part Name, Part Table
         ['C​l​o​s​e​s​t​ ​P​o​i​n​t'] = { ['M​o​d​e'] = 'Advanced', ['S​c​a​l​e'] = 0.93 },
 
@@ -105,15 +105,15 @@ shared.Saved = {
         ['D​o​u​b​l​e​ ​T​a​p'] = { ['E​n​a​b​l​e​d'] = false, { "[Revolver]", "[Silencer]"} },
         ['S​p​r​e​a​d​ ​M​o​d​i​f​i​e​r'] = {
             ['E​n​a​b​l​e​d'] = true,
-            ['Value'] = 0.8,
+            ['Value'] = 0,
             ['R​a​n​d​o​m​i​z​e​r'] = { ['E​n​a​b​l​e​d'] = false, ['V​a​l​u​e'] = math.random(0.1, 0.4) }
         }
     },
 
     ['P​l​a​y​e​r​ ​M​o​d​i​f​i​c​a​t​i​o​n​s'] = {
-        ['N​o​ ​J​u​m​p​ ​C​o​o​l​d​o​w​n'] = false,
-        ['N​o​ ​T​r​i​p​p​i​n​g'] = false,
-        ['W​a​l​k​ ​S​p​e​e​d'] = { ['E​n​a​b​l​e​d'] = true, ['S​p​e​e​d'] = 2, ['G​l​i​d​e'] = false },
+        ['N​o​ ​J​u​m​p​ ​C​o​o​l​d​o​w​n'] = true,
+        ['N​o​ ​T​r​i​p​p​i​n​g'] = true,
+        ['W​a​l​k​ ​S​p​e​e​d'] = { ['E​n​a​b​l​e​d'] = true, ['S​p​e​e​d'] = 9, ['G​l​i​d​e'] = false },
     },    
 
     ['G​a​m​e ​U​t​i​l​i​t​i​e​s'] = {
